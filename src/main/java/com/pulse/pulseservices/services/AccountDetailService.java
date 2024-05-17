@@ -19,14 +19,14 @@ public class AccountDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Account> user = repository.findByUsername(username);
+        Optional<Account> account = repository.findByUsername(username);
 
-        if (user.isPresent()) {
-            Account userObject = user.get();
+        if (account.isPresent()) {
+            Account accountObject = account.get();
             return User.builder()
-                    .username(userObject.getUsername())
-                    .password(userObject.getPassword())
-                    .roles(getRoles(userObject))
+                    .username(accountObject.getUsername())
+                    .password(accountObject.getPassword())
+                    .roles(getRoles(accountObject))
                     .build();
         } else {
             throw new UsernameNotFoundException("Username: {" + username + "} is not found");

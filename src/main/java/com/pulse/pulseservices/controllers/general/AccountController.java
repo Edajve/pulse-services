@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.controllers;
+package com.pulse.pulseservices.controllers.general;
 
 import com.pulse.pulseservices.models.Account;
 import com.pulse.pulseservices.repositories.AccountRepository;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Controller
+@Controller("account")
 public class AccountController {
 
     @Autowired
@@ -19,10 +19,10 @@ public class AccountController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping("register/account")
-    public ResponseEntity<String> createUser(@RequestBody Account user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        accountRepository.save(user);
+    @PostMapping("/register")
+    public ResponseEntity<String> createAccount(@RequestBody Account account) {
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        accountRepository.save(account);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
