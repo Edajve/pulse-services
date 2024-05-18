@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.model;
+package com.pulse.pulseservices.entity;
 
 import com.pulse.pulseservices.enums.Role;
 import jakarta.persistence.Entity;
