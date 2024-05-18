@@ -5,6 +5,7 @@ import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
+import com.pulse.pulseservices.model.auth.IdAndToken;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,10 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .accountCreatedDate(request.getAccountCreatedDate())
+                .sex(request.getSex())
+                .dateOfBirth(request.getDateOfBirth())
+                .countryRegion(request.getCountryRegion())
                 .build();
 
         repository.save(user);
@@ -39,7 +44,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public IdAndToken authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail()
@@ -52,8 +57,14 @@ public class AuthenticationService {
                 .orElseThrow(); // add proper error handling
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
+
+        var token = AuthenticationResponse.builder()
                 .token(jwtToken)
+                .build();
+
+        return IdAndToken.builder()
+                .id(Long.valueOf(user.getId()))
+                .token(token)
                 .build();
     }
 }

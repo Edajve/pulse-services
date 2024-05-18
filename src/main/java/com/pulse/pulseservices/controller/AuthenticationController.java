@@ -2,6 +2,7 @@ package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
+import com.pulse.pulseservices.model.auth.IdAndToken;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<IdAndToken> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(service.authenticate(request));
     }
 }
