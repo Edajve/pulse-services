@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Controller("account")
+@Controller
 public class AccountController {
 
     @Autowired
@@ -18,6 +18,10 @@ public class AccountController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    /**
+    TODO find out why this /register method is still returning unauthorized response
+    **/
 
     @PostMapping("/register")
     public ResponseEntity<String> createAccount(@RequestBody Account account) {
