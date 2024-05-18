@@ -51,8 +51,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Sex sex;
 
-    @JsonFormat(pattern = "MM-dd-yyyy")
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
 
     private Country countryRegion;
 

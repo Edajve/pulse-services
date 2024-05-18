@@ -32,7 +32,7 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .accountCreatedDate(request.getAccountCreatedDate())
                 .sex(request.getSex())
-                .dateOfBirth(request.getDateOfBirth())
+                .dateOfBirth(String.valueOf(request.getDateOfBirth()))
                 .countryRegion(request.getCountryRegion())
                 .build();
 

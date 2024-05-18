@@ -28,6 +28,6 @@ public class RegisterRequest {
     private LocalDateTime accountCreatedDate;
     @Enumerated(EnumType.STRING)
     private Sex sex;
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
     private Country countryRegion;
 }
