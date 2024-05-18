@@ -1,6 +1,8 @@
 package com.pulse.pulseservices.entity;
 
+import com.pulse.pulseservices.enums.Country;
 import com.pulse.pulseservices.enums.Role;
+import com.pulse.pulseservices.enums.Sex;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -26,16 +29,30 @@ import java.util.List;
 @Entity
 @Table(name = "account")
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue
     private Integer id;
+
     private String firstName;
+
     private String lastName;
+
     private String email;
+
     private String password;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
     private LocalDateTime accountCreatedDate;
+
+    @Enumerated(EnumType.STRING)
+    private Sex sex;
+
+    private LocalDate dateOfBirth;
+
+    private Country countryRegion;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
