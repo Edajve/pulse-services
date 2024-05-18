@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.controllers;
+package com.pulse.pulseservices.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
