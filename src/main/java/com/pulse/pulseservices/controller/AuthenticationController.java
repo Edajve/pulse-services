@@ -2,8 +2,8 @@ package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
-import com.pulse.pulseservices.service.AuthenticationService;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
+import com.pulse.pulseservices.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

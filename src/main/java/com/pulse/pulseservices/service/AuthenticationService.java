@@ -1,12 +1,12 @@
 package com.pulse.pulseservices.service;
 
+import com.pulse.pulseservices.config.auth.JwtService;
+import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.repositories.UserRepository;
-import com.pulse.pulseservices.config.JwtService;
-import com.pulse.pulseservices.enums.Role;
-import com.pulse.pulseservices.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
