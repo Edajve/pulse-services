@@ -1,5 +1,6 @@
 package com.pulse.pulseservices.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pulse.pulseservices.enums.Country;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.enums.Sex;
@@ -50,6 +51,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Sex sex;
 
+    @JsonFormat(pattern = "MM-dd-yyyy")
     private LocalDate dateOfBirth;
 
     private Country countryRegion;

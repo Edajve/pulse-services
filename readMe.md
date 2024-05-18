@@ -20,6 +20,11 @@ Start
 mysql -u root -p
 ```
 
+Password for mysql
+```agsl
+new_password
+```
+
 login mysql CLI
 
 ```
