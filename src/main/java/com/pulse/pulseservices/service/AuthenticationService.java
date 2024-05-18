@@ -1,5 +1,8 @@
-package com.pulse.pulseservices.auth;
+package com.pulse.pulseservices.service;
 
+import com.pulse.pulseservices.model.auth.AuthenticationRequest;
+import com.pulse.pulseservices.model.auth.AuthenticationResponse;
+import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.repositories.UserRepository;
 import com.pulse.pulseservices.config.JwtService;
 import com.pulse.pulseservices.enums.Role;

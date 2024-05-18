@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.auth;
+package com.pulse.pulseservices.model.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
