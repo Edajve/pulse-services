@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.config;
+package com.pulse.pulseservices.config.auth;
 
 import com.pulse.pulseservices.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;

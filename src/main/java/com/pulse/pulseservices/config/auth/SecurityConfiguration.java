@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.config;
+package com.pulse.pulseservices.config.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

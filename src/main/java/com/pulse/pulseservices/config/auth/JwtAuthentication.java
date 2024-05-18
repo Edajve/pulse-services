@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.config;
+package com.pulse.pulseservices.config.auth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
