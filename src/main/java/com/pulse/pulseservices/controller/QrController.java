@@ -19,7 +19,7 @@ public class QrController {
     public String generateQrCode() {
         try {
             // The string would be a specially generated string for each user
-            qrService.doBasicDemo("Unique string here");
+            qrService.generateQr("Unique string here");
             return "QR code generated successfully!";
         } catch (IOException e) {
             return "Error generating QR code: " + e.getMessage();
