@@ -3,6 +3,8 @@ package com.pulse.pulseservices.service;
 import com.pulse.pulseservices.config.auth.JwtService;
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.Role;
+import com.pulse.pulseservices.exception.MultipleUsersFoundException;
+import com.pulse.pulseservices.exception.UserNotFoundException;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
 import com.pulse.pulseservices.model.auth.IdAndToken;
@@ -14,11 +16,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -36,7 +40,7 @@ public class AuthenticationService {
                 .countryRegion(request.getCountryRegion())
                 .build();
 
-        repository.save(user);
+        userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
@@ -45,8 +49,15 @@ public class AuthenticationService {
     }
 
     public User getAccountByEmail(String email) {
-        return repository.findByEmail(email)
-                .orElseThrow(); // add proper error handling
+        Optional<User> accounts = userRepository.findByEmail(email);
+
+        if (accounts.isEmpty())
+            throw new UserNotFoundException("No user account found for email: " + email);
+
+        if (accounts.stream().toList().size() > 1)
+            throw new MultipleUsersFoundException("Multiple user accounts found for email: " + email);
+
+        return accounts.get();
     }
 
     public IdAndToken authenticate(AuthenticationRequest request) {
