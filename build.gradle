@@ -40,6 +40,10 @@ dependencies {
 
 	// Add H2 database dependency
 	runtimeOnly 'com.h2database:h2'
+
+	// QR-Code Generator
+	// https://mvnrepository.com/artifact/io.nayuki/qrcodegen
+	implementation 'io.nayuki:qrcodegen:1.8.0'
 }
 
 tasks.named('test') {
