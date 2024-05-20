@@ -1,6 +1,10 @@
 package com.pulse.pulseservices.service;
 
+import com.pulse.pulseservices.entity.Qr;
+import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.repositories.QrRepository;
 import io.nayuki.qrcodegen.QrCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -11,6 +15,13 @@ import java.util.Objects;
 
 @Service
 public class QrService {
+
+    private final QrRepository qrRepository;
+
+    @Autowired
+    public QrService(QrRepository qrRepository) {
+        this.qrRepository = qrRepository;
+    }
 
     public byte[] generateQr(String text) throws IOException {
         QrCode.Ecc errCorLvl = QrCode.Ecc.LOW;
@@ -59,5 +70,15 @@ public class QrService {
             }
         }
         return result;
+    }
+
+    public Qr saveQrToDatabaseAndAssignToUser(byte[] bytes, User user) {
+        return qrRepository.save(
+                new Qr().builder()
+                        .user(user)
+                        .isQrActive(true)
+                        .imageBytes(bytes)
+                        .build()
+        );
     }
 }

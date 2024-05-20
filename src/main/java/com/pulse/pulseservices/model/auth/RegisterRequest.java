@@ -5,12 +5,12 @@ import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.enums.Sex;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -30,4 +30,6 @@ public class RegisterRequest {
     private Sex sex;
     private String dateOfBirth;
     private Country countryRegion;
+    @Lob
+    private byte[] imageBytes;
 }

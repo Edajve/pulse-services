@@ -44,6 +44,11 @@ public class AuthenticationService {
                 .build();
     }
 
+    public User getAccountByEmail(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(); // add proper error handling
+    }
+
     public IdAndToken authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -53,8 +58,7 @@ public class AuthenticationService {
         );
 
         // If the code gets to this point it means the user is authenticated
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow(); // add proper error handling
+        User user = getAccountByEmail(request.getEmail());
 
         var jwtToken = jwtService.generateToken(user);
 

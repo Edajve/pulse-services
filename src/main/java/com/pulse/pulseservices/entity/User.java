@@ -28,7 +28,6 @@ import java.util.List;
 @Entity
 @Table(name = "account")
 public class User implements UserDetails {
-    // do the nessary changes here as well
 
     @Id
     @GeneratedValue
