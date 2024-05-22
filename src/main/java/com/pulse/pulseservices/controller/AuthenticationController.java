@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/api/v1/auth")
@@ -25,11 +26,15 @@ public class AuthenticationController {
     private final QrService qrService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) throws IOException {
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+        // Register user to the account db
         AuthenticationResponse authenticationResponse = authenticationService.register(request);
+
+        // Generate UUID and insert it in qr table
         User user = authenticationService.getAccountByEmail(request.getEmail());
-        byte[] bytes = qrService.generateQr(request.getEmail());
-        qrService.saveQrToDatabaseAndAssignToUser(bytes, user);
+        UUID uuid = qrService.generateUUID();
+        qrService.saveQrToDatabaseAndAssignToUser(uuid, user);
+
         return ResponseEntity.ok(authenticationResponse);
     }
 
