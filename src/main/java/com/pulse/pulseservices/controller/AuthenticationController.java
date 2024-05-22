@@ -26,11 +26,11 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) throws IOException {
-        AuthenticationResponse register = authenticationService.register(request);
+        AuthenticationResponse authenticationResponse = authenticationService.register(request);
         User user = authenticationService.getAccountByEmail(request.getEmail());
         byte[] bytes = qrService.generateQr(request.getEmail());
         qrService.saveQrToDatabaseAndAssignToUser(bytes, user);
-        return ResponseEntity.ok(register);
+        return ResponseEntity.ok(authenticationResponse);
     }
 
     @PostMapping("/authenticate")
