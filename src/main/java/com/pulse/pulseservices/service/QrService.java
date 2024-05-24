@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -20,7 +21,7 @@ public class QrService {
     }
 
     public UUID generateUUID() {
-        return  UUID.randomUUID();
+        return UUID.randomUUID();
     }
 
     public Qr saveQrToDatabaseAndAssignToUser(UUID uuid, User user) {
@@ -38,5 +39,10 @@ public class QrService {
         long high = byteBuffer.getLong();
         long low = byteBuffer.getLong();
         return new UUID(high, low);
+    }
+
+    public byte[] getUUIDByUserId(Long userId) {
+        byte[] uuid = qrRepository.getUUIDById(Math.toIntExact(userId));
+        return Objects.isNull(uuid) ? null : uuid;
     }
 }
