@@ -28,6 +28,11 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+
+        boolean doesUserExist = userRepository.isUserAlreadyRegistered(request.getEmail()).isPresent();
+
+        if (doesUserExist) return null;
+
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
