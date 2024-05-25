@@ -31,6 +31,7 @@ public class AuthenticationService {
 
         boolean doesUserExist = userRepository.isUserAlreadyRegistered(request.getEmail()).isPresent();
 
+        // If user already exists this will return true, therefore we return null in method
         if (doesUserExist) return null;
 
         var user = User.builder()
