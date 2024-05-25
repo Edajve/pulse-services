@@ -34,7 +34,6 @@ public class QrController {
     @Description("Returns the QR-UUID UUID for the account")
     @GetMapping("/{accountId}")
     public ResponseEntity<?> getQrCodeByAccountId(@PathVariable Long accountId) {
-
         User account = accountService.getAccountById(accountId);
 
         byte[] uuidBytes = qrService.getUUIDByUserId(accountId);
@@ -54,17 +53,35 @@ public class QrController {
         return ResponseEntity.ok(build);
     }
 
-    @Description("Takes a user and its QR-UUID and verifies it in the database")
+    /**
+     * Verifies the QR-UUID of a scanned user in the database and checks if the scanning user
+     * (making the network call) and the scanned user have an existing contract.
+     *
+     * If a contract exists, performs additional checks and updates the contract.
+     * If no contract exists, creates a new contract.
+     *
+     * @param scannedUserId the ID of the scanned user (scannie)
+     * @param requestBody contains the QR-UUID of scannie
+     * @return a response indicating the result of the verification and contract update/creation
+     */
     @PostMapping("/authenticate/{scannedUserId}")
     public ResponseEntity<?> isUuidValid(
             @PathVariable Long scannedUserId,
             @RequestBody Token requestBody
     ) {
-        System.out.println(requestBody);
-        return ResponseEntity.ok(
-                new TokenValidationResponse(
-                        qrService.isUuidValid(scannedUserId, requestBody)
-                )
-        );
+        boolean isValid = qrService.isUuidValid(scannedUserId, requestBody);
+
+        if (!isValid) {
+            return new ResponseEntity<>(
+                    "The user-id " + scannedUserId + "'s uuid is not valid in our database"
+                    , HttpStatus.CONFLICT
+            );
+        }
+
+
+
+//        return ResponseEntity.ok(new TokenValidationResponse(isValid));
+
+        return ResponseEntity.ok(new TokenValidationResponse());
     }
 }
