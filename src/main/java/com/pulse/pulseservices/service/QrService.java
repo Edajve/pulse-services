@@ -2,6 +2,7 @@ package com.pulse.pulseservices.service;
 
 import com.pulse.pulseservices.entity.Qr;
 import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.model.Token;
 import com.pulse.pulseservices.repositories.QrRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,13 @@ public class QrService {
                         .generatedQrID(uuid)
                         .build()
         );
+    }
+
+    public boolean isUuidValid(Long scannedUserId, Token requestBody) {
+        byte[] uuidBytes = qrRepository.getUUIDById(Math.toIntExact(scannedUserId));
+        UUID dbUuid = bytesToUUID(uuidBytes);
+        UUID userUuid = requestBody.getUuid();
+        return dbUuid.equals(userUuid);
     }
 
     public UUID bytesToUUID(byte[] bytes) {

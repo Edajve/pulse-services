@@ -2,16 +2,19 @@ package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.entity.Qr;
 import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.model.Token;
+import com.pulse.pulseservices.model.TokenValidationResponse;
 import com.pulse.pulseservices.repositories.QrRepository;
 import com.pulse.pulseservices.service.AccountService;
 import com.pulse.pulseservices.service.QrService;
 import jdk.jfr.Description;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,5 +52,19 @@ public class QrController {
 
         build.setGeneratedQrID(uuid);
         return ResponseEntity.ok(build);
+    }
+
+    @Description("Takes a user and its QR-UUID and verifies it in the database")
+    @PostMapping("/authenticate/{scannedUserId}")
+    public ResponseEntity<?> isUuidValid(
+            @PathVariable Long scannedUserId,
+            @RequestBody Token requestBody
+    ) {
+        System.out.println(requestBody);
+        return ResponseEntity.ok(
+                new TokenValidationResponse(
+                        qrService.isUuidValid(scannedUserId, requestBody)
+                )
+        );
     }
 }
