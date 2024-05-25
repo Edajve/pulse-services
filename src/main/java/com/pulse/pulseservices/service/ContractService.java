@@ -68,6 +68,7 @@ public class ContractService {
 
                 Optional<Contract> allById = contractRepository.findById(contract.getId());
                 if (allById.isPresent()) {
+                System.out.println("it its inserting into: " + allById.get().getId());
                     Contract updatedContract = allById.get();
                     updatedContract.setParticipantTwo(accountService.getAccountById(scannerId));
                     updatedContract.setStatus(ContractStatus.ACTIVE);

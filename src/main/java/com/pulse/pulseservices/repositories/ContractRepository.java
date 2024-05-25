@@ -21,7 +21,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             FROM contract
             WHERE (participant_one_id = ?1)
             AND (contract_number = ?2)
-            AND status = 'ACTIVE'
+            AND status = 'PROGRESS'
             """, nativeQuery = true)
     Optional<Contract> findActiveContractWithAccountAndContractNumber(Long userId, int contractNumber);
 
