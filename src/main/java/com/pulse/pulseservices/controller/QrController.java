@@ -4,7 +4,6 @@ import com.pulse.pulseservices.entity.Qr;
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.model.Token;
 import com.pulse.pulseservices.model.TokenValidationResponse;
-import com.pulse.pulseservices.repositories.QrRepository;
 import com.pulse.pulseservices.service.AccountService;
 import com.pulse.pulseservices.service.QrService;
 import jdk.jfr.Description;
@@ -27,7 +26,6 @@ import java.util.UUID;
 
 public class QrController {
 
-    private final QrRepository qrRepository;
     private final AccountService accountService;
     private final QrService qrService;
 
@@ -53,35 +51,14 @@ public class QrController {
         return ResponseEntity.ok(build);
     }
 
-    /**
-     * Verifies the QR-UUID of a scanned user in the database and checks if the scanning user
-     * (making the network call) and the scanned user have an existing contract.
-     *
-     * If a contract exists, performs additional checks and updates the contract.
-     * If no contract exists, creates a new contract.
-     *
-     * @param scannedUserId the ID of the scanned user (scannie)
-     * @param requestBody contains the QR-UUID of scannie
-     * @return a response indicating the result of the verification and contract update/creation
-     */
+    @Description("Checks if UUID of user scanned is valid")
     @PostMapping("/authenticate/{scannedUserId}")
     public ResponseEntity<?> isUuidValid(
             @PathVariable Long scannedUserId,
             @RequestBody Token requestBody
     ) {
+        // Check if UUID is valid
         boolean isValid = qrService.isUuidValid(scannedUserId, requestBody);
-
-        if (!isValid) {
-            return new ResponseEntity<>(
-                    "The user-id " + scannedUserId + "'s uuid is not valid in our database"
-                    , HttpStatus.CONFLICT
-            );
-        }
-
-        
-
-//        return ResponseEntity.ok(new TokenValidationResponse(isValid));
-
-        return ResponseEntity.ok(new TokenValidationResponse());
+        return ResponseEntity.ok(new TokenValidationResponse(isValid));
     }
 }

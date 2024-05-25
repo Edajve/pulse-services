@@ -18,4 +18,10 @@ public class AccountService {
         return accountRepository.findById(Math.toIntExact(id))
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
     }
+
+    public String getStoredPassword(Long userId) {
+        return accountRepository.findById(Math.toIntExact(userId))
+                .orElseThrow(() -> new IllegalArgumentException("User not found"))
+                .getPassword();
+    }
 }

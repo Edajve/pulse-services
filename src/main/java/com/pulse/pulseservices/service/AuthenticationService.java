@@ -8,6 +8,7 @@ import com.pulse.pulseservices.exception.UserNotFoundException;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
 import com.pulse.pulseservices.model.auth.IdAndToken;
+import com.pulse.pulseservices.model.auth.PasswordAuthentication;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
