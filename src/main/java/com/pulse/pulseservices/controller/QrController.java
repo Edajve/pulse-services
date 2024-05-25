@@ -78,7 +78,7 @@ public class QrController {
             );
         }
 
-
+        
 
 //        return ResponseEntity.ok(new TokenValidationResponse(isValid));
 
