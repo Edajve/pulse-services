@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateOrUpdateContractRequest {
-    private int contractNumber;
+    private Integer contractNumber;
     private String usersPassword;
     private Long scannerUserId;
     private Long scannieUserId;

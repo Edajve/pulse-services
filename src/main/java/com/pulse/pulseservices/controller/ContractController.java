@@ -1,5 +1,6 @@
 package com.pulse.pulseservices.controller;
 
+import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.model.CreateOrUpdateContractRequest;
 import com.pulse.pulseservices.service.ContractService;
 import lombok.RequiredArgsConstructor;
@@ -7,9 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/v1/contract")
@@ -30,6 +36,34 @@ public class ContractController {
         } catch (IllegalStateException | BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/valid/{account-id}")
+    public ResponseEntity<?> allActiveContracts(@PathVariable("account-id") Long accountId) {
+        try {
+            Optional<List<Contract>> activeContracts = contractService.getActiveContractsById(accountId);
+
+            if (activeContracts.isPresent()) return ResponseEntity.ok(activeContracts.get());
+            else
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active contracts found for account ID: " + accountId);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/history/{account-id}")
+    public ResponseEntity<?> allContractsThatAreNotActive(@PathVariable("account-id") Long accountId) {
+        try {
+            Optional<List<Contract>> contracts = contractService.getContractsThatAreNotActive(accountId);
+
+            if (contracts.isPresent()) return ResponseEntity.ok(contracts.get());
+            else
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No contracts found for account ID: " + accountId);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 }
