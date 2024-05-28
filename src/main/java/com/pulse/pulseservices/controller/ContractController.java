@@ -3,6 +3,7 @@ package com.pulse.pulseservices.controller;
 import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.model.CreateOrUpdateContractRequest;
 import com.pulse.pulseservices.service.ContractService;
+import jdk.jfr.Description;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,7 @@ public class ContractController {
         }
     }
 
+    @Description("Gets all contracts for the users account")
     @GetMapping("/history/{account-id}")
     public ResponseEntity<?> allContractsThatAreNotActive(@PathVariable("account-id") Long accountId) {
         try {
@@ -61,6 +63,20 @@ public class ContractController {
             if (contracts.isPresent()) return ResponseEntity.ok(contracts.get());
             else
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No contracts found for account ID: " + accountId);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{contract-id}")
+    public ResponseEntity<?> getContract(@PathVariable("contract-id") Long contractId) {
+        try {
+            Optional<Contract> contract = contractService.getContract(contractId);
+
+            if (contract.isPresent()) return ResponseEntity.ok(contract.get());
+            else
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No contracts found for contract ID: " + contractId);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());

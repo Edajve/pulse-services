@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -28,6 +29,10 @@ public class ContractService {
         Long scannieId = request.getScannieUserId();
         String scannerPassword = request.getUsersPassword();
         int contractNumber = request.getContractNumber();
+
+        if (Objects.equals(scannerId, scannieId)) {
+            throw new IllegalStateException("User can not create a contract with them selves");
+        }
 
         Optional<Contract> activeContract = hasActiveContractBetweenUsers(scannerId, scannieId);
         if (activeContract.isPresent())
@@ -54,6 +59,7 @@ public class ContractService {
                 contract.setStartTime(LocalDateTime.now());
                 contract.setStatus(ContractStatus.PROGRESS);
                 contract.setContractNumber(contractNumber);
+                contract.setDurationMinutes(60); // this will changed depending on the users functionality
                 contractRepository.save(contract);
             } else {
                 Contract contract = scannieActiveContract.get();
@@ -94,5 +100,9 @@ public class ContractService {
 
     public Optional<List<Contract>> getContractsThatAreNotActive(Long accountId) {
         return contractRepository.getAllNonActiveContracts(accountId);
+    }
+
+    public Optional<Contract> getContract(Long contractId) {
+        return contractRepository.findById(contractId);
     }
 }
