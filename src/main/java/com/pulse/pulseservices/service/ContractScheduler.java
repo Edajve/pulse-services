@@ -19,7 +19,7 @@ public class ContractScheduler {
     @Scheduled(fixedRate = 60000) // Every 60 seconds
     public void checkAndUpdateContracts() {
         System.out.println("Running Schedule for out of time contracts");
-        List<Contract> contracts = contractRepository.findAll();
+        List<Contract> contracts = contractRepository.findNonActiveContracts();
         contracts.forEach(contract -> {
             contractRepository.save(contract);
             updateCancelReasonIfRequired(contract);

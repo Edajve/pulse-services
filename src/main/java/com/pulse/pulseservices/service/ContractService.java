@@ -105,4 +105,8 @@ public class ContractService {
     public Optional<Contract> getContract(Long contractId) {
         return contractRepository.findById(contractId);
     }
+
+    public Optional<List<Contract>> getInactiveContractsById(Long accountId) {
+        return contractRepository.getAllNonActiveContracts(accountId);
+    }
 }

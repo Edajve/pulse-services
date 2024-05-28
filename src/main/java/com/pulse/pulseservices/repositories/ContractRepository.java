@@ -48,4 +48,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             AND status != 'ACTIVE'
             """, nativeQuery = true)
     Optional<List<Contract>> getAllNonActiveContracts(Long accountId);
+
+    @Query(value = """
+            SELECT *
+            FROM contract
+            WHERE status = 'ACTIVE'
+            """, nativeQuery = true)
+    List<Contract> findNonActiveContracts();
+
 }
