@@ -54,6 +54,20 @@ public class ContractController {
         }
     }
 
+    @GetMapping("/inactive/{account-id}")
+    public ResponseEntity<?> allInactiveContracts(@PathVariable("account-id") Long accountId) {
+        try {
+            Optional<List<Contract>> activeContracts = contractService.getInactiveContractsById(accountId);
+
+            if (activeContracts.isPresent()) return ResponseEntity.ok(activeContracts.get());
+            else
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active contracts found for account ID: " + accountId);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
     @Description("Gets all contracts for the users account")
     @GetMapping("/history/{account-id}")
     public ResponseEntity<?> allContractsThatAreNotActive(@PathVariable("account-id") Long accountId) {
