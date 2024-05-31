@@ -46,6 +46,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             FROM contract
             WHERE (participant_one_id = ?1 OR participant_two_id = ?1)
             AND status != 'ACTIVE'
+            AND status != 'PROGRESS'
             """, nativeQuery = true)
     Optional<List<Contract>> getAllNonActiveContracts(Long accountId);
 
