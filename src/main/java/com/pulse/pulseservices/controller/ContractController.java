@@ -68,6 +68,20 @@ public class ContractController {
         }
     }
 
+    @GetMapping("/progress/{account-id}")
+    public ResponseEntity<?> allInProgressContracts(@PathVariable("account-id") Long accountId) {
+        try {
+            Optional<List<Contract>> inProgressContracts = contractService.getInProgressContracts(accountId);
+
+            if (inProgressContracts.isPresent()) return ResponseEntity.ok(inProgressContracts.get());
+            else
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No in progress contracts found for account ID: " + accountId);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
     @Description("Gets all contracts for the users account")
     @GetMapping("/history/{account-id}")
     public ResponseEntity<?> allContractsThatAreNotActive(@PathVariable("account-id") Long accountId) {
