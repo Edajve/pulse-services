@@ -14,6 +14,11 @@ spring JPA configuration is configured to automatically create tables on applica
 
 ### How to start mysql and stop mysql locally
 
+How to start from CLI
+```agsl
+./gradlew bootRun
+```
+
 Start
 
 ```
