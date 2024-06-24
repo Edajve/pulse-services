@@ -2,6 +2,7 @@ package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.model.CreateOrUpdateContractRequest;
+import com.pulse.pulseservices.model.contract.UpdateContractRequest;
 import com.pulse.pulseservices.service.ContractService;
 import jdk.jfr.Description;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -107,6 +109,30 @@ public class ContractController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No contracts found for contract ID: " + contractId);
 
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/{contract-id}")
+    public ResponseEntity<?> updateContract(@PathVariable("contract-id") Long contractId, @RequestBody Contract updatedContract) {
+        try {
+            contractService.updateContract(contractId, updatedContract);
+            return ResponseEntity.status(HttpStatus.OK).body("Contract updated");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/revoke/{contract-id}/{user-id}")
+    public ResponseEntity<?> revokeContractByUserId(
+            @PathVariable("contract-id") Long contractId
+            , @PathVariable("user-id") Long userId
+            , @RequestBody UpdateContractRequest updateContractRequest
+    ) {
+        try {
+            contractService.revokeContract(contractId, userId, updateContractRequest);
+            return ResponseEntity.status(HttpStatus.OK).body("Contract updated");
+        } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
