@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.model;
+package com.pulse.pulseservices.model.contract;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

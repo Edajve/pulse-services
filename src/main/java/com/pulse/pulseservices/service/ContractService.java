@@ -3,7 +3,7 @@ package com.pulse.pulseservices.service;
 import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.ContractStatus;
-import com.pulse.pulseservices.model.CreateOrUpdateContractRequest;
+import com.pulse.pulseservices.model.contract.CreateOrUpdateContractRequest;
 import com.pulse.pulseservices.model.contract.UpdateContractRequest;
 import com.pulse.pulseservices.repositories.ContractRepository;
 import lombok.RequiredArgsConstructor;
@@ -176,5 +176,21 @@ public class ContractService {
         LocalDateTime nowTime = LocalDateTime.now();
         if (bothUsersHasRevoked)
             contractRepository.updateContractStatusByID(updatedContract.getId(), "Both Parties Revoked", "CANCELLED", nowTime);
+    }
+
+    public int getTotalContractsCount(Long id) {
+        return contractRepository.getTotalContractCount(id);
+    }
+
+    public int getTotalContractsRevokedCount(Long id) {
+        return contractRepository.getTotalContractRevokedCount(id);
+    }
+
+    public List<Contract> getAllContracts(Long id) {
+        return contractRepository.getTotalContracts(id);
+    }
+
+    public List<Contract> getTotalRevokedContracts(Long id) {
+        return contractRepository.getTotalRevokedContracts(id);
     }
 }

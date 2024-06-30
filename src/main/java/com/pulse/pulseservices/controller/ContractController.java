@@ -1,7 +1,7 @@
 package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.entity.Contract;
-import com.pulse.pulseservices.model.CreateOrUpdateContractRequest;
+import com.pulse.pulseservices.model.contract.CreateOrUpdateContractRequest;
 import com.pulse.pulseservices.model.contract.UpdateContractRequest;
 import com.pulse.pulseservices.service.ContractService;
 import jdk.jfr.Description;

@@ -105,4 +105,45 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
         WHERE id = ?1
         """, nativeQuery = true)
     void updateContractStatusByID(Long contractID, String cancelReason, String newStatus, LocalDateTime endTime);
+
+    @Query(value = """
+            SELECT *
+            FROM contract
+            WHERE participant_one_id = ?1
+            OR  participant_two_id = ?1
+            """, nativeQuery = true)
+    List<Contract> getAllContracts(Long id);
+
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM contract
+            WHERE participant_one_id = ?1
+            OR  participant_two_id = ?1
+            """, nativeQuery = true)
+    int getTotalContractCount(Long id);
+
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM contract
+            WHERE (participant_one_id = ?1 OR participant_two_id = ?1)
+            AND status = 'CANCELLED'
+            """, nativeQuery = true)
+    int getTotalContractRevokedCount(Long id);
+
+    @Query(value = """
+            SELECT *
+            FROM contract
+            WHERE participant_one_id = ?1
+            OR  participant_two_id = ?1
+            """, nativeQuery = true)
+    List<Contract> getTotalContracts(Long id);
+
+    @Query(value = """
+            SELECT *
+            FROM contract
+            WHERE participant_one_id = ?1
+            OR  participant_two_id = ?1
+            AND status = 'CANCELLED'
+            """, nativeQuery = true)
+    List<Contract> getTotalRevokedContracts(Long id);
 }

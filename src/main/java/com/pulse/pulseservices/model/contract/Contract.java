@@ -1,4 +1,4 @@
-package com.pulse.pulseservices.model;
+package com.pulse.pulseservices.model.contract;
 
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.ContractStatus;
