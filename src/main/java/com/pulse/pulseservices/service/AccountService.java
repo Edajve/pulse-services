@@ -5,8 +5,10 @@ import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.model.AccountStats;
 import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.ContractRepository;
+import com.pulse.pulseservices.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,11 +20,20 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final ContractRepository contractRepository;
+    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, ContractRepository contractRepository) {
+    public AccountService(
+            AccountRepository accountRepository
+            , ContractRepository contractRepository
+            , PasswordEncoder passwordEncoder,
+            UserRepository userRepository) {
         this.accountRepository = accountRepository;
         this.contractRepository = contractRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     public User getAccountById(Long id) {
@@ -105,5 +116,16 @@ public class AccountService {
         double completedContracts = totalContracts - totalContractsRevoked;
         double ratio = completedContracts / totalContractsRevoked;
         return Math.round(ratio * 100.0) / 100.0;
+    }
+
+    public void resetPassword(int accountId, String password) {
+        // reset password
+        try {
+            User account = getAccountById((long) accountId);
+            account.setPassword(passwordEncoder.encode(password));
+            userRepository.save(account);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
