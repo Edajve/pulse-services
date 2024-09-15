@@ -25,6 +25,8 @@ public class RegisterRequest {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private String securityAnswer;
+    private String securityQuestion;
     private LocalDateTime accountCreatedDate;
     @Enumerated(EnumType.STRING)
     private Sex sex;

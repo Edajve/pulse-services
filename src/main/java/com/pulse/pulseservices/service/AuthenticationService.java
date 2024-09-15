@@ -41,6 +41,8 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .securityAnswer(request.getSecurityAnswer())
+                .securityQuestion(request.getSecurityQuestion())
                 .accountCreatedDate(request.getAccountCreatedDate())
                 .sex(request.getSex())
                 .dateOfBirth(String.valueOf(request.getDateOfBirth()))

@@ -43,6 +43,8 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    private String securityQuestion;
+    private String securityAnswer;
 
     private LocalDateTime accountCreatedDate;
 

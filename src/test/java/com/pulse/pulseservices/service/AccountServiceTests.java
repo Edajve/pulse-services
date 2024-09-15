@@ -90,6 +90,8 @@ public class AccountServiceTests {
                 .dateOfBirth("12-12-1997")
                 .email("ad")
                 .firstName(firstName)
+                .securityQuestion("What is your favorite movie?")
+                .securityAnswer("TEST ANSWER")
                 .lastName(lastName)
                 .password("fakePass")
                 .role(Role.USER)
