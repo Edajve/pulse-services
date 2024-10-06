@@ -61,6 +61,9 @@ public class User implements UserDetails {
     @Column(name = "biometric_login")
     private Boolean isBiometricLogin;
 
+    @Column(name = "pin_code")
+    private String pinCode;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

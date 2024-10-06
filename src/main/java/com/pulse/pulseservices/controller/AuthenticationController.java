@@ -13,10 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -86,5 +88,19 @@ public class AuthenticationController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PutMapping("/update/pin/{accountId}")
+    public ResponseEntity<?> updatePin(
+            @PathVariable Long accountId,
+            @RequestParam boolean pinSetting,
+            @RequestParam(required = false) String pinCode) {
+        accountService.updatePinSetting(accountId, pinSetting);
+
+        if (pinCode != null) {
+            accountService.updatePinSettingAndPinCode(accountId, pinSetting, pinCode);
+        }
+
+        return ResponseEntity.ok().build();
     }
 }

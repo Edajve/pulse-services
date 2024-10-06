@@ -165,4 +165,16 @@ public class AccountService {
 
         return "verified";
     }
+
+    public void updatePinSetting(Long accountId, boolean pinSetting) {
+        accountRepository.updatePinSetting(accountId, pinSetting);
+    }
+
+    public void updatePinSettingAndPinCode(Long accountId, boolean pinSetting, String pinCode) {
+        accountRepository.updatePinSetting(accountId, pinSetting);
+
+        User account = getAccountById(accountId);
+        account.setPinCode(passwordEncoder.encode(pinCode));
+        userRepository.save(account);
+    }
 }
