@@ -3,6 +3,7 @@ package com.pulse.pulseservices.entity;
 import com.pulse.pulseservices.enums.Country;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.enums.Sex;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -43,7 +44,9 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
     private String securityQuestion;
+
     private String securityAnswer;
 
     private LocalDateTime accountCreatedDate;
@@ -54,6 +57,9 @@ public class User implements UserDetails {
     private String dateOfBirth;
 
     private Country countryRegion;
+
+    @Column(name = "biometric_login")
+    private Boolean isBiometricLogin;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
