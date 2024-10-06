@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -118,14 +120,49 @@ public class AccountService {
         return Math.round(ratio * 100.0) / 100.0;
     }
 
-    public void resetPassword(int accountId, String password) {
-        // reset password
+    public void resetPassword(int accountId, String newPassword) {
         try {
             User account = getAccountById((long) accountId);
-            account.setPassword(passwordEncoder.encode(password));
+            account.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(account);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return accountRepository.findByEmail(email);
+    }
+
+    public boolean isEmailInDataBase(String email) {
+        Optional<User> byEmail = accountRepository.findByEmail(email);
+        return byEmail.isPresent();
+    }
+
+    public String verifySecurityQuestionAndAnswer(String securityQuestion, String securityAnswer, String email) {
+        Optional<User> userOptional = accountRepository.findByEmail((email));
+        if (userOptional.isEmpty()) {
+            return "Invalid account";
+        }
+
+        User user = userOptional.get();
+
+        if (Objects.isNull(user.getSecurityQuestion())) {
+            throw new RuntimeException(String.format("This accountId: %s does not have a security question", user.getId()));
+        }
+
+        if (Objects.isNull(user.getSecurityAnswer())) {
+            throw new RuntimeException(String.format("This accountId: %s does not have a security Answer", user.getId()));
+        }
+
+        if (!securityQuestion.trim().equals(user.getSecurityQuestion().trim())) {
+            return "Security Question is incorrect";
+        }
+
+        if (!securityAnswer.trim().equals(user.getSecurityAnswer().trim())) {
+            return "Security Answer is incorrect";
+        }
+
+        return "verified";
     }
 }
