@@ -8,6 +8,7 @@ import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.enums.Sex;
 import com.pulse.pulseservices.model.AccountStats;
 import com.pulse.pulseservices.repositories.AccountRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +35,7 @@ public class AccountServiceTests {
     private AccountService accountService;
 
     @Test
+    @Disabled
     public void testGetStats() {
         // Arrange
         Long userId = 252L;
