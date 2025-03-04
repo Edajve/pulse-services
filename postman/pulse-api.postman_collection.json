@@ -1,0 +1,606 @@
+{
+	"info": {
+		"_postman_id": "d1c630f5-9db0-452c-b3ab-9425bf403a90",
+		"name": "pulse-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16410388"
+	},
+	"item": [
+		{
+			"name": "QR",
+			"item": [
+				{
+					"name": "POST /qr/authenticate/{scannedUserId}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJEZWNob2xzODdAZ21haWwuY29tIiwiaWF0IjoxNzE2MDYzNDA1LCJleHAiOjE3MTYwNjQ4NDV9.zbpEr8AhW4WcZDVAEP7HifB4sj-hFv66lFjWAPjEyYHofvKiSpUyvy5S2QfYa7jk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/account/102",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"102"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /qr/{accountId}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxNjU1ODIwMiwiZXhwIjoxNzE2NTU5NjQyfQ.RFnjQjPjv7fWssmKGy2IEkyDSf_zsB-LkAZ37keSo4UfhzIf22xi-v5S-LmH9LKT",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/qr/252",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"qr",
+								"252"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contract",
+			"item": [
+				{
+					"name": "POST /qr/authenticate/{scannedUserId}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxNjcxMjQxMiwiZXhwIjoxNzE2NzEzODUyfQ.IenjDMekMj1XIgxbl36Uw6v-dbCujxnQLkzc9Oz-l8eCfvFirdtfUY-KuqaF1OM_",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"contractNumber\": 80\n    , \"usersPassword\" : \"pass\"\n    , \"scannerUserId\" : 252\n    , \"scannieUserId\" : 252\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/contract/create",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"contract",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /contract/valid/{account-id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxNjg3MzYzNSwiZXhwIjoxNzE2ODc1MDc1fQ.eDkKtwVFszx5CVTUbdQuii9Gwfxvfu47nyPFcLrYpj8poCCvlgyFhVILFcx99Dtt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/contract/valid/252",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"contract",
+								"valid",
+								"252"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /contract/inactive/{account-id}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxNjg3MzYzNSwiZXhwIjoxNzE2ODc1MDc1fQ.eDkKtwVFszx5CVTUbdQuii9Gwfxvfu47nyPFcLrYpj8poCCvlgyFhVILFcx99Dtt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/contract/inactive/252",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"contract",
+								"inactive",
+								"252"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /contract/{contract-id}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxNjg3MzYzNSwiZXhwIjoxNzE2ODc1MDc1fQ.eDkKtwVFszx5CVTUbdQuii9Gwfxvfu47nyPFcLrYpj8poCCvlgyFhVILFcx99Dtt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/contract/17",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"contract",
+								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /progress/{contract-id}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxNjg3MzYzNSwiZXhwIjoxNzE2ODc1MDc1fQ.eDkKtwVFszx5CVTUbdQuii9Gwfxvfu47nyPFcLrYpj8poCCvlgyFhVILFcx99Dtt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/contract/17",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"contract",
+								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /update/revoke/{contract-number}/{user-id}",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxNjg3MzYzNSwiZXhwIjoxNzE2ODc1MDc1fQ.eDkKtwVFszx5CVTUbdQuii9Gwfxvfu47nyPFcLrYpj8poCCvlgyFhVILFcx99Dtt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/contract/17",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"contract",
+								"17"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "GET /account/id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxOTI3OTYzNiwiZXhwIjoxNzE5MjgxMDc2fQ.fofjrdy-soIFdnT7aFhGKVHvILBB5wSYN_b_yGKEbs1u2uUlcHqS2sZ75qi-7w5l",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/account/252",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"252"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /password/reset/{account-id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJyZXNldCIsImlhdCI6MTcyNjQ0NTI2OSwiZXhwIjoxNzI2NDQ2NzA5fQ.B9hujPfHzrYJATQHOv8yD8mR61dMOWDebGz6wDHbLcWYojkxA-s7mbThRph7G-FK",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"reset\",\n  \"securityQuestion\": \"what was the name of your first pet?\",\n  \"securityAnswer\": \"aofjasopfjasdifjasdiofj\",\n  \"password\": \"resett\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/account/password/reset/702",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"password",
+								"reset",
+								"702"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /account/stats/id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxOTc2Njk0NSwiZXhwIjoxNzE5NzY4Mzg1fQ.15WcyuSOtKnwBo2Ev8tibmT8FG_iYEPADXoHT12nXsucPjQyFtXiLXh7FuSs1ES1",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/account/stats/252",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"stats",
+								"252"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /authenticate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"reset\",\n  \"password\": \"resett\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/auth/authenticate",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"accountCreatedDate\": \"2024-05-18T16:55:42.284Z\",\n    \"countryRegion\": \"united_states\",\n    \"dateOfBirth\": \"1997-12-12\",\n    \"email\": \"Sbdhfh@gmail.com\",\n    \"firstName\": \"Chdne\",\n    \"lastName\": \"Dbdebeb\",\n    \"password\": \"pass\",\n    \"securityQuestion\": \"what is your favorite book?\",\n    \"securityAnswer\":\"TEST IN POSTMAN\",\n    \"role\": \"USER\",\n    \"sex\": \"male\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/auth/register",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /account/password/reset/accountId",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJBZCIsImlhdCI6MTcxOTc5MzIwMiwiZXhwIjoxNzE5Nzk0NjQyfQ.JVF4mbAT0P-aD2gaPoEATWNncU0wdF2Bjhlc6E93ZQb5pzdRHZsNsRuE-nktNMoS",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"pass\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURI}}/api/v1/account/password/reset/252",
+							"host": [
+								"{{baseURI}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"account",
+								"password",
+								"reset",
+								"252"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}
