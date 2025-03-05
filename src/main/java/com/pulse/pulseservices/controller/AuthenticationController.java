@@ -1,6 +1,7 @@
 package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.enums.ResetPasswordStatus;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
 import com.pulse.pulseservices.model.auth.IdAndToken;
@@ -59,7 +60,7 @@ public class AuthenticationController {
         try {
             // make sure the user exists by the email from the UI not from the accountId
             if (!accountService.isEmailInDataBase(resetPasswordRequest.getEmail())) {
-                return ResponseEntity.status(HttpStatus.OK).body("Invalid credentials");
+                return ResponseEntity.status(HttpStatus.OK).body("This email is not in the database");
             }
 
             // Verify security question and answer (consider moving this logic to the service)
@@ -69,15 +70,15 @@ public class AuthenticationController {
                     resetPasswordRequest.getEmail()
             );
 
-            if ("Security Question is incorrect".equals(verificationStatus)) {
+            if (ResetPasswordStatus.INCORRECT_QUESTION.getMessage().equals(verificationStatus)) {
                 return ResponseEntity.status(HttpStatus.OK).body(verificationStatus);
             }
 
-            if ("Security Answer is incorrect".equals(verificationStatus)) {
+            if (ResetPasswordStatus.INCORRECT_ANSWER.getMessage().equals(verificationStatus)) {
                 return ResponseEntity.status(HttpStatus.OK).body(verificationStatus);
             }
 
-            if (!"verified".equals(verificationStatus)) {
+            if (ResetPasswordStatus.VERIFIED.getMessage().equals(verificationStatus)) {
                 return ResponseEntity.status(HttpStatus.OK).body(verificationStatus);
             }
 

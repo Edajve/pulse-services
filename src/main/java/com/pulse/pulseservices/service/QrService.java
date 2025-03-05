@@ -4,6 +4,8 @@ import com.pulse.pulseservices.entity.Qr;
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.model.Token;
 import com.pulse.pulseservices.repositories.QrRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.UUID;
 public class QrService {
 
     private final QrRepository qrRepository;
+    private static final Logger logger = LoggerFactory.getLogger(QrService.class);
+
 
     @Autowired
     public QrService(QrRepository qrRepository) {
@@ -25,14 +29,16 @@ public class QrService {
         return UUID.randomUUID();
     }
 
-    public Qr saveQrToDatabaseAndAssignToUser(UUID uuid, User user) {
-        return qrRepository.save(
-                new Qr().builder()
+    public void saveQrToDatabaseAndAssignToUser(UUID uuid, User user) {
+        new Qr();
+        qrRepository.save(
+                Qr.builder()
                         .user(user)
                         .isQrActive(true)
                         .generatedQrID(uuid)
                         .build()
         );
+        logger.info("Successfully assigned QR code {} to User ID = {}", uuid, user.getId());
     }
 
     public boolean isUuidValid(Long scannedUserId, Token requestBody) {

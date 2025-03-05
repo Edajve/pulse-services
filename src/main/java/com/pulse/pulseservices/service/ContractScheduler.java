@@ -3,7 +3,6 @@ package com.pulse.pulseservices.service;
 import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.enums.ContractStatus;
 import com.pulse.pulseservices.repositories.ContractRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +12,11 @@ import java.util.List;
 @Component
 public class ContractScheduler {
 
-    @Autowired
-    private ContractRepository contractRepository;
+    private final ContractRepository contractRepository;
+
+    public ContractScheduler(ContractRepository contractRepository) {
+        this.contractRepository = contractRepository;
+    }
 
     @Scheduled(fixedRate = 60000) // Every 60 seconds
     public void checkAndUpdateContracts() {

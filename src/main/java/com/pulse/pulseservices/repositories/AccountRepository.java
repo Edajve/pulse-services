@@ -11,7 +11,7 @@ public interface AccountRepository extends JpaRepository<User, Integer> {
     @Query(value = """
             SELECT *
             FROM account
-            WHERE email = ?1
+            WHERE LOWER(email) = LOWER(?1)
             """, nativeQuery = true)
     Optional<User> findByEmail(String email);
 

@@ -7,6 +7,8 @@ import com.pulse.pulseservices.model.contract.CreateOrUpdateContractRequest;
 import com.pulse.pulseservices.model.contract.UpdateContractRequest;
 import com.pulse.pulseservices.repositories.ContractRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,37 +25,47 @@ public class ContractService {
     private final ContractRepository contractRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountService accountService;
+    private static final Logger logger = LoggerFactory.getLogger(ContractService.class);
+
 
     // Create contract table if these users have does not already have an active open contract,
-    // if not then update contract with other user
+// if not then update contract with other user
     public void createOrUpdateContract(CreateOrUpdateContractRequest request) {
         Long scannerId = request.getScannerUserId();
         Long scannieId = request.getScannieUserId();
         String scannerPassword = request.getUsersPassword();
         int contractNumber = request.getContractNumber();
 
+        logger.info("Received request to create/update contract: Scanner ID = {}, Scannie ID = {}, Contract Number = {}",
+                scannerId, scannieId, contractNumber);
+
         if (Objects.equals(scannerId, scannieId)) {
-            throw new IllegalStateException("User can not create a contract with them selves");
+            logger.warn("User {} attempted to create a contract with themselves", scannerId);
+            throw new IllegalStateException("User can not create a contract with themselves");
         }
 
         Optional<Contract> activeContract = hasActiveContractBetweenUsers(scannerId, scannieId);
-        if (activeContract.isPresent())
+        if (activeContract.isPresent()) {
+            logger.warn("Active contract already exists between Scanner ID = {} and Scannie ID = {}", scannerId, scannieId);
             throw new IllegalStateException("Active contract already exists between the participants, can not create another until this is closed");
+        }
 
         Optional<Contract> scannerActiveContract =
                 contractRepository.findActiveContractWithAccountAndContractNumber(scannerId, contractNumber);
 
         if (scannerActiveContract.isPresent()) {
-            throw new IllegalStateException("Scanner tried to create an active contract with the " +
-                                            "same contract number. Use a different contract number, or wait until that contract is finished");
+            logger.warn("Scanner ID = {} tried to create an active contract with the same contract number {}", scannerId, contractNumber);
+            throw new IllegalStateException("Scanner tried to create an active contract with the same contract number. Use a different contract number, or wait until that contract is finished");
         } else {
             Optional<Contract> scannieActiveContract =
                     contractRepository.findActiveContractWithAccountAndContractNumber(scannieId, contractNumber);
 
             if (scannieActiveContract.isEmpty()) {
                 String storedPassword = accountService.getStoredPassword(scannerId);
-                if (!passwordEncoder.matches(scannerPassword, storedPassword))
+                if (!passwordEncoder.matches(scannerPassword, storedPassword)) {
+                    logger.error("Invalid password attempt for Scanner ID = {}", scannerId);
                     throw new BadCredentialsException("Invalid password");
+                }
 
                 // Creating a new contract
                 Contract contract = new Contract();
@@ -61,17 +73,23 @@ public class ContractService {
                 contract.setStartTime(LocalDateTime.now());
                 contract.setStatus(ContractStatus.PROGRESS);
                 contract.setContractNumber(contractNumber);
-                contract.setDurationMinutes(60); // this will changed depending on the users functionality
+                contract.setDurationMinutes(60); // this will change depending on the users functionality
                 contractRepository.save(contract);
+
+                logger.info("New contract created successfully: Contract Number = {}, Scanner ID = {}", contractNumber, scannerId);
             } else {
                 Contract contract = scannieActiveContract.get();
 
                 String storedPassword = accountService.getStoredPassword(scannerId);
-                if (!passwordEncoder.matches(scannerPassword, storedPassword))
+                if (!passwordEncoder.matches(scannerPassword, storedPassword)) {
+                    logger.error("Invalid password attempt for Scanner ID = {} when trying to update contract", scannerId);
                     throw new BadCredentialsException("Invalid password");
+                }
 
                 int contractNumberInContractRecord = getContractNumber(contract.getId());
                 if (contractNumberInContractRecord != contractNumber) {
+                    logger.error("Scanner ID = {} provided incorrect contract number {} for existing contract {}",
+                            scannerId, contractNumber, contract.getId());
                     throw new BadCredentialsException("User did not pass in correct contract number to participate in contract");
                 }
 
@@ -82,6 +100,7 @@ public class ContractService {
                     updatedContract.setStatus(ContractStatus.ACTIVE);
 
                     contractRepository.save(updatedContract);
+                    logger.info("Contract ID = {} updated successfully. Second participant (Scanner ID = {}) added.", contract.getId(), scannerId);
                 }
             }
         }
@@ -116,20 +135,21 @@ public class ContractService {
     }
 
     public void updateContract(Long contractId, Contract updatedContract) {
-        Optional<Contract> contractOptional = getContract(contractId);
+        logger.info("Received request to update contract: Contract ID = {}", contractId);
 
-        if (contractOptional.isEmpty())
+        Optional<Contract> contractOptional = getContract(contractId);
+        if (contractOptional.isEmpty()) {
+            logger.warn("Attempted to update a non-existent contract ID = {}", contractId);
             throw new IllegalStateException("This contract id of " + contractId + " does not exist");
+        }
 
         Contract contract = contractOptional.get();
 
-        if (updatedContract.getParticipantOne() != null)
-            contract.setParticipantOne(updatedContract.getParticipantOne());
-        if (updatedContract.getParticipantTwo() != null)
-            contract.setParticipantTwo(updatedContract.getParticipantTwo());
-        if (updatedContract.getStartTime() != null) contract.setStartTime(updatedContract.getStartTime());
+        contract.setParticipantOne(updatedContract.getParticipantOne());
+        contract.setParticipantTwo(updatedContract.getParticipantTwo());
+        contract.setStartTime(updatedContract.getStartTime());
         if (updatedContract.getEndTime() != null) contract.setEndTime(updatedContract.getEndTime());
-        if (updatedContract.getStatus() != null) contract.setStatus(updatedContract.getStatus());
+        contract.setStatus(updatedContract.getStatus());
         contract.setDidParticipantOneRevoke(updatedContract.isDidParticipantOneRevoke());
         contract.setDidParticipantTwoRevoke(updatedContract.isDidParticipantTwoRevoke());
         if (updatedContract.getParticipantOneRevokeContractReason() != null)
@@ -143,17 +163,20 @@ public class ContractService {
         if (updatedContract.getContractNumber() != 0) contract.setContractNumber(updatedContract.getContractNumber());
 
         contractRepository.save(contract);
+        logger.info("Contract ID = {} updated successfully", contractId);
     }
 
-    public void revokeContract(
-            Long contractId
-            , Long userId
-            , UpdateContractRequest updateContractRequest
-    ) {
-        Optional<Contract> contractOptional = contractRepository.getContractById(contractId);
 
-        if (contractOptional.isEmpty())
+    public void revokeContract(
+            Long contractId, Long userId, UpdateContractRequest updateContractRequest
+    ) {
+        logger.info("Revocation request received: Contract ID = {}, User ID = {}", contractId, userId);
+
+        Optional<Contract> contractOptional = contractRepository.getContractById(contractId);
+        if (contractOptional.isEmpty()) {
+            logger.warn("Attempted to revoke a non-existent contract ID = {}", contractId);
             throw new IllegalStateException("This contract number of " + contractId + " does not exist");
+        }
 
         Contract contract = contractOptional.get();
         User account = accountService.getAccountById(userId);
@@ -161,21 +184,26 @@ public class ContractService {
         boolean doesUserMatchFirstParticipant = contract.getParticipantOne().getId().equals(account.getId());
         boolean doesUserMatchSecondParticipant = contract.getParticipantTwo().getId().equals(account.getId());
 
-        if (doesUserMatchFirstParticipant)
+        if (doesUserMatchFirstParticipant) {
+            logger.info("User ID = {} is revoking as Participant One for Contract ID = {}", userId, contractId);
             contractRepository.updateRevokeReasonForParticipantOne(updateContractRequest.getRevokeReason(), contract.getId());
-        else if (doesUserMatchSecondParticipant)
+        } else if (doesUserMatchSecondParticipant) {
+            logger.info("User ID = {} is revoking as Participant Two for Contract ID = {}", userId, contractId);
             contractRepository.updateRevokeReasonForParticipantTwo(updateContractRequest.getRevokeReason(), contract.getId());
-        else
+        } else {
+            logger.error("User ID = {} attempted to revoke a contract (ID = {}) they are not a participant of", userId, contractId);
             throw new IllegalStateException(String.format("This account id of: %s is not on this contract number of %s", account.getId(), contract.getContractNumber()));
+        }
 
-        // only cancelled contract once both revokes, or one revokes and the other denies the revoke
         Optional<Contract> grabContractOptionalAgain = contractRepository.getContractById(contractId);
         Contract updatedContract = grabContractOptionalAgain.get();
-        boolean bothUsersHasRevoked = updatedContract.isDidParticipantOneRevoke()
-                                      || updatedContract.isDidParticipantTwoRevoke();
+        boolean bothUsersHasRevoked = updatedContract.isDidParticipantOneRevoke() || updatedContract.isDidParticipantTwoRevoke();
         LocalDateTime nowTime = LocalDateTime.now();
-        if (bothUsersHasRevoked)
+
+        if (bothUsersHasRevoked) {
             contractRepository.updateContractStatusByID(updatedContract.getId(), "Both Parties Revoked", "CANCELLED", nowTime);
+            logger.info("Contract ID = {} has been cancelled as both participants revoked", contractId);
+        }
     }
 
     public int getTotalContractsCount(Long id) {

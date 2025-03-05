@@ -7,6 +7,8 @@ import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.ContractRepository;
 import com.pulse.pulseservices.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,8 +24,9 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final ContractRepository contractRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
 
     @Autowired
@@ -122,10 +125,13 @@ public class AccountService {
 
     public void resetPassword(int accountId, String newPassword) {
         try {
+            logger.info("Password reset request received for User ID = {}", accountId);
             User account = getAccountById((long) accountId);
             account.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(account);
+            logger.info("Password successfully changed for User ID = {}", accountId);
         } catch (Exception e) {
+            logger.error("Error while resetting password for User ID = {}: {}", accountId, e.getMessage());
             throw new RuntimeException(e);
         }
     }
