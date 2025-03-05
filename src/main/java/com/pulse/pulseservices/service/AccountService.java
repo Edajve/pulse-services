@@ -28,7 +28,6 @@ public class AccountService {
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
-
     @Autowired
     public AccountService(
             AccountRepository accountRepository
