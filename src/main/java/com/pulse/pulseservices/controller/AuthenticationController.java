@@ -40,7 +40,7 @@ public class AuthenticationController {
         AuthenticationResponse authenticationResponse = authenticationService.register(request);
 
         if (Objects.isNull(authenticationResponse))
-            return new ResponseEntity<>("User already exists", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("User already exists", HttpStatus.OK);
 
         // Generate UUID and insert it in qr table
         User user = authenticationService.getAccountByEmail(request.getEmail());

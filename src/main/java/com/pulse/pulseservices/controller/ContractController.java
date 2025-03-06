@@ -36,9 +36,15 @@ public class ContractController {
         try {
             contractService.createOrUpdateContract(request);
             return ResponseEntity.ok().build();
-        } catch (IllegalStateException | BadCredentialsException e) {
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Error: " + e.getMessage());
+        } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred. Please try again later.");
         }
     }
 

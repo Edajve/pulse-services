@@ -55,7 +55,7 @@ public class ContractService {
 
         if (scannerActiveContract.isPresent()) {
             logger.warn("Scanner ID = {} tried to create an active contract with the same contract number {}", scannerId, contractNumber);
-            throw new IllegalStateException("Scanner tried to create an active contract with the same contract number. Use a different contract number, or wait until that contract is finished");
+            throw new IllegalStateException("Scanner tried to create an active contract with the same contract number. Use a different contract number, or have your consenting partner enter into this contract with this number");
         } else {
             Optional<Contract> scannieActiveContract =
                     contractRepository.findActiveContractWithAccountAndContractNumber(scannieId, contractNumber);
@@ -186,10 +186,10 @@ public class ContractService {
 
         if (doesUserMatchFirstParticipant) {
             logger.info("User ID = {} is revoking as Participant One for Contract ID = {}", userId, contractId);
-            contractRepository.updateRevokeReasonForParticipantOne(updateContractRequest.getRevokeReason(), contract.getId());
+            contractRepository.updateRevokeReasonForParticipantOne(updateContractRequest.getRevokeReason(), contract.getId(), "CANCELLED");
         } else if (doesUserMatchSecondParticipant) {
             logger.info("User ID = {} is revoking as Participant Two for Contract ID = {}", userId, contractId);
-            contractRepository.updateRevokeReasonForParticipantTwo(updateContractRequest.getRevokeReason(), contract.getId());
+            contractRepository.updateRevokeReasonForParticipantTwo(updateContractRequest.getRevokeReason(), contract.getId(), "CANCELLED");
         } else {
             logger.error("User ID = {} attempted to revoke a contract (ID = {}) they are not a participant of", userId, contractId);
             throw new IllegalStateException(String.format("This account id of: %s is not on this contract number of %s", account.getId(), contract.getContractNumber()));

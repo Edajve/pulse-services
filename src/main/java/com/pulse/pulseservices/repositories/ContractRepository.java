@@ -71,22 +71,24 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Transactional
     @Modifying
     @Query(value = """
-            UPDATE contract
-            SET participant_one_revoke_reason = ?1,
-                did_participant_one_revoke = true
-            WHERE id = ?2
-            """, nativeQuery = true)
-    void updateRevokeReasonForParticipantOne(String revokeReason, Long contractID);
+        UPDATE contract
+        SET participant_one_revoke_reason = ?1,
+            did_participant_one_revoke = true,
+            status = ?3
+        WHERE id = ?2
+        """, nativeQuery = true)
+    void updateRevokeReasonForParticipantOne(String revokeReason, Long contractID, String newStatus);
 
     @Transactional
     @Modifying
     @Query(value = """
-            UPDATE contract
-            SET participant_two_revoke_reason = ?1,
-                did_participant_two_revoke = true
-            WHERE id = ?2
-            """, nativeQuery = true)
-    void updateRevokeReasonForParticipantTwo(String revokeReason, Long contractID);
+        UPDATE contract
+        SET participant_two_revoke_reason = ?1,
+            did_participant_two_revoke = true,
+            status = ?3
+        WHERE id = ?2
+        """, nativeQuery = true)
+    void updateRevokeReasonForParticipantTwo(String revokeReason, Long contractID, String newStatus);
 
 
     @Query(value = """
