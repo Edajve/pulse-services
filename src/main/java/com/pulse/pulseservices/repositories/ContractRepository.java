@@ -58,7 +58,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             FROM contract
             WHERE status = 'ACTIVE'
             """, nativeQuery = true)
-    List<Contract> findNonActiveContracts();
+    List<Contract> findActiveContracts();
 
     @Query(value = """
             SELECT *
@@ -141,11 +141,10 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<Contract> getTotalContracts(Long id);
 
     @Query(value = """
-            SELECT *
-            FROM contract
-            WHERE participant_one_id = ?1
-            OR  participant_two_id = ?1
-            AND status = 'CANCELLED'
-            """, nativeQuery = true)
+    SELECT *
+    FROM contract
+    WHERE (participant_one_id = ?1 OR participant_two_id = ?1)
+    AND status = 'CANCELLED'
+    """, nativeQuery = true)
     List<Contract> getTotalRevokedContracts(Long id);
 }
