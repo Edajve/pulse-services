@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT * FROM account WHERE email = ?1", nativeQuery = true)
     Optional<User> isUserAlreadyRegistered(String email);
+
+    @Query(value = "SELECT * FROM account WHERE local_hash = ?1", nativeQuery = true)
+    Optional<User> findByLocalHash(String localHash);
 }

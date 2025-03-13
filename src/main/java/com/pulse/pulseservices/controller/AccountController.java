@@ -31,4 +31,10 @@ public class AccountController {
         AccountStats accountStats = accountService.getStats(Long.valueOf(account.getId()));
         return ResponseEntity.ok(accountStats);
     }
+
+    @GetMapping("authMethod")
+    public ResponseEntity<String> getAuthMethodByLocalHash(@RequestParam String localHash) {
+        String authMethod = accountService.getAuthMethodByLocalHash(localHash);
+        return ResponseEntity.ok(authMethod);
+    }
 }

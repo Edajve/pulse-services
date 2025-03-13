@@ -65,6 +65,9 @@ public class User implements UserDetails {
     @Column(name = "local_hash")
     private String localHash;
 
+    @Column(name = "auth_method")
+    private String authMethod;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

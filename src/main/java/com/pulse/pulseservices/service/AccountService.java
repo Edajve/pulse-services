@@ -2,6 +2,7 @@ package com.pulse.pulseservices.service;
 
 import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.exception.UserNotFoundException;
 import com.pulse.pulseservices.model.AccountStats;
 import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.ContractRepository;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -72,45 +73,34 @@ public class AccountService {
     private String getMostOccurringPartner(List<Contract> contracts, Long id) {
         if (contracts.isEmpty()) return "None";
 
-        // go through and get the most contracted partners
-        Map<Integer, Integer> occurrences = new HashMap<>();
+        Map<Integer, Integer> occurrences = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
+
         for (Contract contract : contracts) {
+            int partnerId;
             if ((long) contract.getParticipantOne().getId() == id) {
-                // track user participant two
-                if (occurrences.containsKey(contract.getParticipantTwo().getId())) {
-                    occurrences.put(
-                            contract.getParticipantTwo().getId(),
-                            occurrences.get(contract.getParticipantTwo().getId()) + 1
-                    );
-                } else {
-                    occurrences.put(contract.getParticipantTwo().getId(), 1);
-                }
+                partnerId = contract.getParticipantTwo().getId();
             } else {
-                // track user of participant one
-                if (occurrences.containsKey(contract.getParticipantOne().getId())) {
-                    occurrences.put(
-                            contract.getParticipantOne().getId(),
-                            occurrences.get(contract.getParticipantOne().getId()) + 1
-                    );
-                } else {
-                    occurrences.put(contract.getParticipantOne().getId(), 1);
-                }
+                partnerId = contract.getParticipantOne().getId();
             }
+
+            occurrences.put(partnerId, occurrences.getOrDefault(partnerId, 0) + 1);
         }
 
-        Integer mostContractedPartnerId = 0;
+        Integer mostContractedPartnerId = null;
         Integer maxOccurrences = 0;
-        // which id has the highest number
-        for (Map.Entry<Integer, Integer> contract : occurrences.entrySet()) {
-            Integer currentKey = contract.getKey();
-            Integer currentValue = contract.getValue();
-            if (currentValue >= maxOccurrences) {
-                maxOccurrences = currentValue;
-                mostContractedPartnerId = currentKey;
+
+        for (Map.Entry<Integer, Integer> entry : occurrences.entrySet()) {
+            if (entry.getValue() > maxOccurrences ||
+                (entry.getValue().equals(maxOccurrences) && (mostContractedPartnerId == null || entry.getKey() < mostContractedPartnerId))) {
+                // Tie-breaker: Pick the partner with the smaller ID
+                maxOccurrences = entry.getValue();
+                mostContractedPartnerId = entry.getKey();
             }
         }
 
-        // what is the users name of this id
+        if (mostContractedPartnerId == null) return "None";
+
+
         User mostContractedPartner = getAccountById(Long.valueOf(mostContractedPartnerId));
         return String.format("%s %s", mostContractedPartner.getFirstName(), mostContractedPartner.getLastName());
     }
@@ -182,4 +172,15 @@ public class AccountService {
         account.setPinCode(passwordEncoder.encode(pinCode));
         userRepository.save(account);
     }
+
+    public String getAuthMethodByLocalHash(String localHash) {
+        Optional<User> user = userRepository.findByLocalHash(localHash);
+
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("No user found with this local hash");
+        }
+
+        return user.get().getLocalHash();
+    }
+
 }
