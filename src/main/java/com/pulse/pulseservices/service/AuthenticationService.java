@@ -7,8 +7,7 @@ import com.pulse.pulseservices.exception.MultipleUsersFoundException;
 import com.pulse.pulseservices.exception.UserNotFoundException;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
-import com.pulse.pulseservices.model.auth.IdAndToken;
-import com.pulse.pulseservices.model.auth.PasswordAuthentication;
+import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +68,7 @@ public class AuthenticationService {
         return accounts.get();
     }
 
-    public IdAndToken authenticate(AuthenticationRequest request) {
+    public RegisterResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail()
@@ -86,7 +85,7 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
 
-        return IdAndToken.builder()
+        return RegisterResponse.builder()
                 .id(Long.valueOf(user.getId()))
                 .token(token)
                 .build();

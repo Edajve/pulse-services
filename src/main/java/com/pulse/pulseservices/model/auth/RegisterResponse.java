@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class IdAndToken {
+public class RegisterResponse {
     private Long id;
     private AuthenticationResponse token;
+    private String localHash;
 }

@@ -4,7 +4,7 @@ import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.ResetPasswordStatus;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
-import com.pulse.pulseservices.model.auth.IdAndToken;
+import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.model.auth.ResetPasswordRequest;
 import com.pulse.pulseservices.service.AccountService;
@@ -51,7 +51,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<IdAndToken> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<RegisterResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
