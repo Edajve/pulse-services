@@ -4,12 +4,15 @@ import com.pulse.pulseservices.config.auth.JwtService;
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.exception.MultipleUsersFoundException;
+import com.pulse.pulseservices.exception.UserHasNoLocalHashException;
 import com.pulse.pulseservices.exception.UserNotFoundException;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
-import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
+import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.repositories.UserRepository;
+import com.pulse.pulseservices.utils.Util;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final QrService qrService;
 
     public AuthenticationResponse register(RegisterRequest request) {
 
@@ -46,13 +51,19 @@ public class AuthenticationService {
                 .sex(request.getSex())
                 .dateOfBirth(String.valueOf(request.getDateOfBirth()))
                 .countryRegion(request.getCountryRegion())
+                .localHash(Util.generateHash())
                 .build();
 
         userRepository.save(user);
 
+        // Generate UUID and insert it in qr table
+        UUID uuid = qrService.generateUUID();
+        qrService.saveQrToDatabaseAndAssignToUser(uuid, user);
+
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .localHash(user.getLocalHash())
                 .build();
     }
 
@@ -79,6 +90,10 @@ public class AuthenticationService {
         // If the code gets to this point it means the user is authenticated
         User user = getAccountByEmail(request.getEmail());
 
+        if (StringUtils.isEmpty(user.getLocalHash())) {
+            throw new UserHasNoLocalHashException("This user has no local hash in the database");
+        }
+
         var jwtToken = jwtService.generateToken(user);
 
         var token = AuthenticationResponse.builder()
@@ -88,6 +103,7 @@ public class AuthenticationService {
         return RegisterResponse.builder()
                 .id(Long.valueOf(user.getId()))
                 .token(token)
+                .localHash(user.getLocalHash())
                 .build();
     }
 }

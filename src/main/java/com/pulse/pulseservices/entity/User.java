@@ -61,8 +61,9 @@ public class User implements UserDetails {
     @Column(name = "pin_code")
     private String pinCode;
 
+    // This hash is set on the users client, so that we know what authentication method the user prefers
     @Column(name = "local_hash")
-    private Boolean localHash;
+    private String localHash;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

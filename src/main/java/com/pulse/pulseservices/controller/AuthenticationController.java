@@ -4,12 +4,11 @@ import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.ResetPasswordStatus;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
-import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
+import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.model.auth.ResetPasswordRequest;
 import com.pulse.pulseservices.service.AccountService;
 import com.pulse.pulseservices.service.AuthenticationService;
-import com.pulse.pulseservices.service.QrService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/api/v1/auth")
@@ -31,21 +29,14 @@ import java.util.UUID;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final QrService qrService;
     private final AccountService accountService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // Register user to the account db
         AuthenticationResponse authenticationResponse = authenticationService.register(request);
 
         if (Objects.isNull(authenticationResponse))
             return new ResponseEntity<>("User already exists", HttpStatus.OK);
-
-        // Generate UUID and insert it in qr table
-        User user = authenticationService.getAccountByEmail(request.getEmail());
-        UUID uuid = qrService.generateUUID();
-        qrService.saveQrToDatabaseAndAssignToUser(uuid, user);
 
         return ResponseEntity.ok(authenticationResponse);
     }
