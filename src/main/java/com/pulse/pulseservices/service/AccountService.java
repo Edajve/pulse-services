@@ -174,13 +174,9 @@ public class AccountService {
     }
 
     public String getAuthMethodByLocalHash(String localHash) {
-        Optional<User> user = userRepository.findByLocalHash(localHash);
-
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("No user found with this local hash");
-        }
-
-        return user.get().getLocalHash();
+        return userRepository.findByLocalHash(localHash)
+                .map(User::getAuthMethod)
+                .orElseThrow(() -> new UserNotFoundException("No user found with this local hash"));
     }
 
 }

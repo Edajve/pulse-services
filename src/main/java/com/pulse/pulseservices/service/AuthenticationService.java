@@ -2,6 +2,7 @@ package com.pulse.pulseservices.service;
 
 import com.pulse.pulseservices.config.auth.JwtService;
 import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.enums.AuthMethod;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.exception.MultipleUsersFoundException;
 import com.pulse.pulseservices.exception.UserHasNoLocalHashException;
@@ -52,6 +53,7 @@ public class AuthenticationService {
                 .dateOfBirth(String.valueOf(request.getDateOfBirth()))
                 .countryRegion(request.getCountryRegion())
                 .localHash(Util.generateHash())
+                .authMethod(String.valueOf(AuthMethod.BASIC)) // Default value
                 .build();
 
         userRepository.save(user);

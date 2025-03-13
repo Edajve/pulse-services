@@ -18,8 +18,8 @@ create table account
     security_answer      varchar(255)                                                                  null,
     security_question    varchar(255)                                                                  null,
     sex                  enum ('female', 'gender_queer', 'male', 'non_binary', 'other', 'transgender') null,
-    local_hash           varchar(255)                                                                  null,
-    auth_method          varchar(20)                                                                   null,
+    local_hash           varchar(88)                                                                   null,
+    auth_method          varchar(255)                                                                  null,
     check (`country_region` between 0 and 0)
 );
 
