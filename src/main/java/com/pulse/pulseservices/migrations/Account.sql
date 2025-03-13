@@ -2,21 +2,23 @@
 DROP TABLE IF EXISTS account;
 
 -- Create Account table
-CREATE TABLE account
+create table account
 (
-    id                      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username                VARCHAR(255) NOT NULL,
-    password                VARCHAR(255) NOT NULL,
-    email                   VARCHAR(255),
-    first_name              VARCHAR(255) NOT NULL,
-    last_name               VARCHAR(255) NOT NULL,
-    enabled                 BOOLEAN      NOT NULL,
-    account_non_expired     BOOLEAN      NOT NULL,
-    account_non_locked      BOOLEAN      NOT NULL,
-    credentials_non_expired BOOLEAN      NOT NULL,
-    created_date            TIMESTAMP    NOT NULL,
-    last_login_date         TIMESTAMP,
-    security_question       VARCHAR(255),
-    security_answer         VARCHAR(255)
+    id                   int                                                                           not null
+        primary key,
+    account_created_date datetime(6)                                                                   null,
+    country_region       tinyint                                                                       null,
+    date_of_birth        varchar(255)                                                                  null,
+    email                varchar(255)                                                                  null,
+    first_name           varchar(255)                                                                  null,
+    last_name            varchar(255)                                                                  null,
+    password             varchar(255)                                                                  null,
+    pin_code             varchar(255)                                                                  null,
+    role                 enum ('ADMIN', 'USER')                                                        null,
+    security_answer      varchar(255)                                                                  null,
+    security_question    varchar(255)                                                                  null,
+    sex                  enum ('female', 'gender_queer', 'male', 'non_binary', 'other', 'transgender') null,
+    local_hash           varchar(255)                                                                  null,
+    check (`country_region` between 0 and 0)
 );
 

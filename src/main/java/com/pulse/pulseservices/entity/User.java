@@ -58,11 +58,11 @@ public class User implements UserDetails {
 
     private Country countryRegion;
 
-    @Column(name = "biometric_login")
-    private Boolean isBiometricLogin;
-
     @Column(name = "pin_code")
     private String pinCode;
+
+    @Column(name = "local_hash")
+    private Boolean localHash;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
