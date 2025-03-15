@@ -33,12 +33,9 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        AuthenticationResponse authenticationResponse = authenticationService.register(request);
-
-        if (Objects.isNull(authenticationResponse))
-            return new ResponseEntity<>("User already exists", HttpStatus.OK);
-
-        return ResponseEntity.ok(authenticationResponse);
+        return Objects.isNull(authenticationService.registerUser(request))
+                ? new ResponseEntity<>("User already exists", HttpStatus.OK)
+                : ResponseEntity.ok(authenticationService.registerUser(request));
     }
 
     @PostMapping("/authenticate")

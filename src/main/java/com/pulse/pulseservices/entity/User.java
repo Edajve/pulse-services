@@ -68,6 +68,9 @@ public class User implements UserDetails {
     @Column(name = "auth_method")
     private String authMethod;
 
+    @Column(name = " has_been_asked_auth_method")
+    private boolean hasUserBeenAskedAuthMethod;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

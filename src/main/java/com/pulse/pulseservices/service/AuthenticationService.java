@@ -33,7 +33,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final QrService qrService;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse registerUser(RegisterRequest request) {
 
         boolean doesUserExist = userRepository.isUserAlreadyRegistered(request.getEmail()).isPresent();
 
@@ -54,6 +54,7 @@ public class AuthenticationService {
                 .countryRegion(request.getCountryRegion())
                 .localHash(Util.generateHash())
                 .authMethod(String.valueOf(AuthMethod.BASIC)) // Default value
+                .hasUserBeenAskedAuthMethod(false)
                 .build();
 
         userRepository.save(user);

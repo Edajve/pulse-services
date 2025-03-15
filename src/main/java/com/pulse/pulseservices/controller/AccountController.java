@@ -34,7 +34,6 @@ public class AccountController {
 
     @GetMapping("/authMethod")
     public ResponseEntity<String> getAuthMethodByLocalHash(@RequestParam String localHash) {
-        System.out.println("Received UUID: " + localHash);
 
         String authMethod = accountService.getAuthMethodByLocalHash(localHash);
 
