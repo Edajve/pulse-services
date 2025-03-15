@@ -1,5 +1,6 @@
 package com.pulse.pulseservices.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pulse.pulseservices.enums.Country;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.enums.Sex;
@@ -68,9 +69,10 @@ public class User implements UserDetails {
     @Column(name = "auth_method")
     private String authMethod;
 
-    @Column(name = " has_been_asked_auth_method")
-    private boolean hasUserBeenAskedAuthMethod;
+    @Column(name = "has_been_asked_auth_method")
+    private Boolean hasUserBeenAskedAuthMethod = false;
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

@@ -9,8 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/v1/account")
@@ -32,15 +35,13 @@ public class AccountController {
         return ResponseEntity.ok(accountStats);
     }
 
-    @GetMapping("/authMethod")
-    public ResponseEntity<String> getAuthMethodByLocalHash(@RequestParam String localHash) {
+    @PutMapping("/update/{accountId}")
+    public ResponseEntity<User> updateUserById(@PathVariable int accountId, @RequestBody User updateUser) {
+        System.out.println(updateUser);
+        Optional<User> user = accountService.updateUser(accountId, updateUser);
 
-        String authMethod = accountService.getAuthMethodByLocalHash(localHash);
-
-        if (authMethod == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found for this local hash");
-        }
-
-        return ResponseEntity.ok(authMethod);
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
+
 }

@@ -18,8 +18,18 @@ public interface AccountRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query(value = """
             UPDATE account
-            SET biometric_login = ?2
+            SET pin_code = ?2
             WHERE id = ?1
             """, nativeQuery = true)
     void updatePinSetting(Long accountId, boolean pinSetting);
+
+
+    @Query(value = """
+        SELECT * 
+        FROM account
+        WHERE pin_code = ?1 
+        AND local_hash = ?2
+        LIMIT 1
+        """, nativeQuery = true)
+    Optional<User> getUserByPinAndHash(String pin, String localHash);
 }

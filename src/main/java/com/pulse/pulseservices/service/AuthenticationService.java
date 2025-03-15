@@ -11,6 +11,8 @@ import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.model.auth.RegisterResponse;
+import com.pulse.pulseservices.model.auth.AuthenticateWithPinRequest;
+import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.UserRepository;
 import com.pulse.pulseservices.utils.Util;
 import io.micrometer.common.util.StringUtils;
@@ -32,6 +34,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final QrService qrService;
+    private final AccountService accountService;
+    private final AccountRepository accountRepository;
 
     public AuthenticationResponse registerUser(RegisterRequest request) {
 
@@ -108,5 +112,9 @@ public class AuthenticationService {
                 .token(token)
                 .localHash(user.getLocalHash())
                 .build();
+    }
+
+    public Boolean authenticateUserWithPin(AuthenticateWithPinRequest request) {
+        return accountRepository.getUserByPinAndHash(request.getPin(), request.getLocalHash()).isPresent();
     }
 }

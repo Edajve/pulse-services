@@ -1,5 +1,6 @@
 package com.pulse.pulseservices.unit.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pulse.pulseservices.controller.AccountController;
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.Country;
@@ -18,9 +19,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,6 +40,7 @@ class AccountControllerTests {
 
     private User mockUser;
     private AccountStats mockStats;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
@@ -105,5 +109,38 @@ class AccountControllerTests {
 
         verify(accountService, times(1)).getAccountById(accountId);
         verify(accountService, times(1)).getStats(accountId);
+    }
+
+    @Test
+    void testUpdateUserById_Success() throws Exception {
+        User user = new User();
+        user.setId(1);
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setRole(Role.USER);
+
+        when(accountService.updateUser(eq(1), any(User.class))).thenReturn(Optional.of(user));
+
+        mockMvc.perform(put("/api/v1/account/update/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.lastName").value("Doe"));
+    }
+
+    @Test
+    void testUpdateUserById_UserNotFound() throws Exception {
+        User user = new User();
+        user.setId(1);
+        user.setFirstName("John");
+        user.setLastName("Doe");
+
+        when(accountService.updateUser(eq(1), any(User.class))).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/api/v1/account/update/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isNotFound());
     }
 }

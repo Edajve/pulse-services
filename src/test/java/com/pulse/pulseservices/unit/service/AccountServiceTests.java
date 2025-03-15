@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -47,9 +48,21 @@ public class AccountServiceTests {
 
     private User testUser;
 
+    private User existingUser;
+
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this); // Ensures mocks are properly initialized
+
         testUser = User.builder()
+                .id(1)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .password("secure-password")
+                .build();
+
+        existingUser = User.builder()
                 .id(1)
                 .firstName("John")
                 .lastName("Doe")

@@ -2,8 +2,8 @@ package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.ResetPasswordStatus;
+import com.pulse.pulseservices.model.auth.AuthenticateWithPinRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
-import com.pulse.pulseservices.model.auth.AuthenticationResponse;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.model.auth.ResetPasswordRequest;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,9 +34,10 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        return Objects.isNull(authenticationService.registerUser(request))
-                ? new ResponseEntity<>("User already exists", HttpStatus.OK)
-                : ResponseEntity.ok(authenticationService.registerUser(request));
+        var registeredUser = authenticationService.registerUser(request);
+        return Objects.isNull(registeredUser)
+                ? ResponseEntity.ok("User already exists")
+                : ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/authenticate")
@@ -91,5 +93,25 @@ public class AuthenticationController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/authMethod")
+    public ResponseEntity<String> getAuthMethodByLocalHash(@RequestParam String localHash) {
+
+        String authMethod = accountService.getAuthMethodByLocalHash(localHash);
+
+        if (authMethod == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found for this local hash");
+        }
+
+        return ResponseEntity.ok(authMethod);
+    }
+
+    @PostMapping("/authenticate/pin")
+    public ResponseEntity<String> registerWithPin(@RequestBody AuthenticateWithPinRequest request) {
+        Boolean authenticatedUserWithPin = authenticationService.authenticateUserWithPin(request);
+        return authenticatedUserWithPin ?
+                ResponseEntity.ok("Authenticated")
+                : ResponseEntity.ok("Incorrect Credentials");
     }
 }

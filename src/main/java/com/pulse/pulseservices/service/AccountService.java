@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -179,4 +180,30 @@ public class AccountService {
                 .orElseThrow(() -> new UserNotFoundException("No user found with this local hash"));
     }
 
+    @Transactional
+    public Optional<User> updateUser(int accountId, User request) {
+        User user = userRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean isUserTryingUpdatePIFields =   request.getPassword() != null ||
+                                                  request.getLocalHash() != null;
+        if (isUserTryingUpdatePIFields) {
+            throw new IllegalArgumentException("Updating password, pinCode, or localHash is not allowed due to security reasons.");
+        }
+
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        if (request.getSecurityQuestion() != null) user.setSecurityQuestion(request.getSecurityQuestion());
+        if (request.getSecurityAnswer() != null) user.setSecurityAnswer(request.getSecurityAnswer());
+        if (request.getSex() != null) user.setSex(request.getSex());
+        if (request.getDateOfBirth() != null) user.setDateOfBirth(request.getDateOfBirth());
+        if (request.getCountryRegion() != null) user.setCountryRegion(request.getCountryRegion());
+        if (request.getAuthMethod() != null) user.setAuthMethod(request.getAuthMethod());
+        if (request.getPinCode() != null) user.setPinCode(request.getPinCode());
+        if (request.getHasUserBeenAskedAuthMethod() != null) user.setHasUserBeenAskedAuthMethod(request.getHasUserBeenAskedAuthMethod());
+
+        // might want to return only the correct properties
+        return Optional.of(userRepository.save(user));
+    }
 }
