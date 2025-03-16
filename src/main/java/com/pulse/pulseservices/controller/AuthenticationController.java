@@ -4,6 +4,7 @@ import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.ResetPasswordStatus;
 import com.pulse.pulseservices.model.auth.AuthenticateWithPinRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
+import com.pulse.pulseservices.model.auth.AuthenticationResponseForPin;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.model.auth.RegisterResponse;
 import com.pulse.pulseservices.model.auth.ResetPasswordRequest;
@@ -108,10 +109,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticate/pin")
-    public ResponseEntity<String> registerWithPin(@RequestBody AuthenticateWithPinRequest request) {
-        Boolean authenticatedUserWithPin = authenticationService.authenticateUserWithPin(request);
-        return authenticatedUserWithPin ?
-                ResponseEntity.ok("Authenticated")
-                : ResponseEntity.ok("Incorrect Credentials");
+    public ResponseEntity<AuthenticationResponseForPin> registerWithPin(@RequestBody AuthenticateWithPinRequest request) {
+        Optional<AuthenticationResponseForPin> authenticatedUserWithPin = authenticationService.authenticateUserWithPin(request);
+        return authenticatedUserWithPin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.ok(null));
+    }
+
+    @PostMapping("/authenticate/hash/{localHash}")
+    public ResponseEntity<AuthenticationResponseForPin> registerWithPin(@PathVariable String localHash) {
+
+        Optional<AuthenticationResponseForPin> authenticatedUserWithPin = authenticationService.authenticateUserWithHash(localHash);
+
+        return authenticatedUserWithPin.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null));
     }
 }

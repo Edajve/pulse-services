@@ -7,11 +7,12 @@ import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.exception.MultipleUsersFoundException;
 import com.pulse.pulseservices.exception.UserHasNoLocalHashException;
 import com.pulse.pulseservices.exception.UserNotFoundException;
+import com.pulse.pulseservices.model.auth.AuthenticateWithPinRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
+import com.pulse.pulseservices.model.auth.AuthenticationResponseForPin;
 import com.pulse.pulseservices.model.auth.RegisterRequest;
 import com.pulse.pulseservices.model.auth.RegisterResponse;
-import com.pulse.pulseservices.model.auth.AuthenticateWithPinRequest;
 import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.UserRepository;
 import com.pulse.pulseservices.utils.Util;
@@ -114,7 +115,24 @@ public class AuthenticationService {
                 .build();
     }
 
-    public Boolean authenticateUserWithPin(AuthenticateWithPinRequest request) {
-        return accountRepository.getUserByPinAndHash(request.getPin(), request.getLocalHash()).isPresent();
+    public Optional<AuthenticationResponseForPin> authenticateUserWithPin(AuthenticateWithPinRequest request) {
+        return authenticateUser(accountRepository.getUserByPinAndHash(request.getPin(), request.getLocalHash()));
+    }
+
+    public Optional<AuthenticationResponseForPin> authenticateUserWithHash(String localHash) {
+        return authenticateUser(accountRepository.getUserByHash(localHash));
+    }
+
+    // Extracted helper method to avoid redundancy
+    private Optional<AuthenticationResponseForPin> authenticateUser(Optional<User> userOptional) {
+        return userOptional.map(user -> {
+            String jwtToken = jwtService.generateToken(user);
+
+            return AuthenticationResponseForPin.builder()
+                    .token(jwtToken)
+                    .id(user.getId())
+                    .localHash(user.getLocalHash())
+                    .build();
+        });
     }
 }

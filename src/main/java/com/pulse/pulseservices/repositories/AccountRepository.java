@@ -32,4 +32,12 @@ public interface AccountRepository extends JpaRepository<User, Integer> {
         LIMIT 1
         """, nativeQuery = true)
     Optional<User> getUserByPinAndHash(String pin, String localHash);
+
+    @Query(value = """
+        SELECT * 
+        FROM account
+        WHERE local_hash = ?1 
+        LIMIT 1
+        """, nativeQuery = true)
+    Optional<User> getUserByHash(String localHash);
 }
