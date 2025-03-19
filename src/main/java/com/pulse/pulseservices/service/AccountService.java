@@ -206,4 +206,8 @@ public class AccountService {
         // might want to return only the correct properties
         return Optional.of(userRepository.save(user));
     }
+
+    public List<Integer> getAccountsWithName(String name) {
+        return accountRepository.getAllAccountsWithName(name);
+    }
 }

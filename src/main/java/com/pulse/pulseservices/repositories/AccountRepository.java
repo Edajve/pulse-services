@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<User, Integer> {
@@ -40,4 +41,11 @@ public interface AccountRepository extends JpaRepository<User, Integer> {
         LIMIT 1
         """, nativeQuery = true)
     Optional<User> getUserByHash(String localHash);
+
+    @Query(value = """
+        SELECT id 
+        FROM account
+        WHERE LOWER(first_name) = LOWER(?1)
+        """, nativeQuery = true)
+    List<Integer> getAllAccountsWithName(String name);
 }

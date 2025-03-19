@@ -147,4 +147,15 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     AND status = 'CANCELLED'
     """, nativeQuery = true)
     List<Contract> getTotalRevokedContracts(Long id);
+
+    @Query(value = """
+    SELECT * 
+    FROM contract 
+    WHERE 
+    (participant_one_id = ?2 AND participant_two_id IN ?1)
+    OR 
+    (participant_two_id = ?2 AND participant_one_id IN ?1)
+""", nativeQuery = true)
+    Optional<List<Contract>> getSearchedContractsByNameForUserId(List<Integer> idsWithGivenName, int userId);
+
 }

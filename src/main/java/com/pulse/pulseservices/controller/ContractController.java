@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +28,6 @@ public class ContractController {
 
     private final ContractService contractService;
 
-    /**
-     * TODO
-     * some testing needs to be done but it looks to work the most part
-     */
     @PostMapping("/create")
     public ResponseEntity<?> register(@RequestBody CreateOrUpdateContractRequest request) {
         try {
@@ -142,4 +139,15 @@ public class ContractController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Contract>> getContractsByNameSearch(
+            @RequestParam String name,
+            @RequestParam int userId
+    ) {
+        Optional<List<Contract>> contracts = contractService.findByNameAndUserId(name, userId);
+
+        return contracts.orElse(null) == null ? ResponseEntity.ok(null) : ResponseEntity.ok(contracts.get());
+    }
+
 }

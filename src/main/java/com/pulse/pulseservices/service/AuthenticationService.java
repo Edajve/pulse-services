@@ -123,7 +123,6 @@ public class AuthenticationService {
         return authenticateUser(accountRepository.getUserByHash(localHash));
     }
 
-    // Extracted helper method to avoid redundancy
     private Optional<AuthenticationResponseForPin> authenticateUser(Optional<User> userOptional) {
         return userOptional.map(user -> {
             String jwtToken = jwtService.generateToken(user);

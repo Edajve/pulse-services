@@ -221,4 +221,11 @@ public class ContractService {
     public List<Contract> getTotalRevokedContracts(Long id) {
         return contractRepository.getTotalRevokedContracts(id);
     }
+
+    public Optional<List<Contract>> findByNameAndUserId(String name, int userId) {
+
+       List<Integer> idsWithGivenName = accountService.getAccountsWithName(name);
+
+        return contractRepository.getSearchedContractsByNameForUserId(idsWithGivenName, userId);
+    }
 }
