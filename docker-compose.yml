@@ -33,6 +33,15 @@ services:
     networks:
       - app-network
 
+  expo-app:
+    build: /Users/dajve.echols/file-structure/03-personal/01-code/02-remote-code/06-full-stack/03-pulse/pulse-client
+    ports:
+      - "8081:8081"
+    environment:
+      - EXPO_TOKEN=3_1d4SIH6D3DqFr4m6WgddSQ79AFy5rsHYOoP_Lb
+    stdin_open: true
+    tty: true
+
 networks:
   app-network:
 
