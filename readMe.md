@@ -23,6 +23,10 @@ Run the following command to **build and start the services**:
 
 ### **🏃 Stopping the Application**
 
+### Run this if you make any code changes and want docker to include the changes 
+This command will rebuild the docker images with the included code changes and start the containers like normal
+```docker-compose up --build -d```
+
 ### 🛑 Stop Application (Keep Data)
 To stop the application while keeping the database data, run:
 ```docker-compose down```
