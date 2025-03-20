@@ -47,7 +47,7 @@ class AccountControllerTests {
         mockMvc = MockMvcBuilders.standaloneSetup(accountController).build();
 
         mockUser = User.builder()
-                .id(1)
+                .id(1L)
                 .firstName("John")
                 .lastName("Doe")
                 .email("johndoe@example.com")
@@ -114,7 +114,7 @@ class AccountControllerTests {
     @Test
     void testUpdateUserById_Success() throws Exception {
         User user = new User();
-        user.setId(1);
+        user.setId(1L);
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setRole(Role.USER);
@@ -132,7 +132,7 @@ class AccountControllerTests {
     @Test
     void testUpdateUserById_UserNotFound() throws Exception {
         User user = new User();
-        user.setId(1);
+        user.setId(1L);
         user.setFirstName("John");
         user.setLastName("Doe");
 

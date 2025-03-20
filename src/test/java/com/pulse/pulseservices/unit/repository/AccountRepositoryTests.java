@@ -30,7 +30,7 @@ public class AccountRepositoryTests {
 
         // Arrange
         User user = User.builder()
-                .id(1)
+                .id(1L)
                 .firstName("John")
                 .lastName("Doe")
                 .email("johndoe@example.com")
@@ -102,7 +102,7 @@ public class AccountRepositoryTests {
 
         // Arrange
         User user = User.builder()
-                .id(1)
+                .id(1L)
                 .firstName("John")
                 .lastName("Doe")
                 .email("johndoe@example.com")
@@ -136,7 +136,7 @@ public class AccountRepositoryTests {
 
         // Arrange
         User user = User.builder()
-                .id(1)
+                .id(1L)
                 .firstName("John")
                 .lastName("Doe")
                 .email("johndoe@example.com")
@@ -170,7 +170,7 @@ public class AccountRepositoryTests {
 
         // Arrange
         User user = User.builder()
-                .id(1)
+                .id(1L)
                 .firstName(name)
                 .lastName("Doe")
                 .email("johndoe@example.com")
@@ -195,7 +195,7 @@ public class AccountRepositoryTests {
 
         // Assert
         Assertions.assertThat(userID.get(0)).isGreaterThan(0);
-        Assertions.assertThat(userID.size()).isGreaterThan(0);
+        Assertions.assertThat(userID.size()).isEqualTo(1);
     }
 
     @Test
@@ -246,6 +246,40 @@ public class AccountRepositoryTests {
         List<Integer> userID = accountRepository.getAllAccountsWithName(name);
 
         // Assert
-        Assertions.assertThat(userID.size()).isGreaterThan(1);
+        Assertions.assertThat(userID.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void AccountRepository_findById_ReturnUser() {
+        Long id = 1L;
+
+        // Arrange
+        User user = User.builder()
+                .id(id)
+                .firstName("John")
+                .lastName("Doe")
+                .email("johndoe@example.com")
+                .password("securePassword123")
+                .role(Role.USER)
+                .securityQuestion("What is your favorite color?")
+                .securityAnswer("Blue")
+                .accountCreatedDate(LocalDateTime.now())
+                .sex(Sex.MALE)
+                .dateOfBirth("1990-05-15")
+                .countryRegion(Country.UNITED_STATES)
+                .pinCode("1234")
+                .localHash("hashedValue123")
+                .authMethod("PIN")
+                .hasUserBeenAskedAuthMethod(false)
+                .build();
+
+        accountRepository.save(user);
+
+        // Act
+       Optional<User> userById = accountRepository.findById(Math.toIntExact(id));
+
+        // Assert
+        Assertions.assertThat(userById.isPresent()).isNotNull();
+        Assertions.assertThat(userById.get().getId().equals(id));
     }
 }

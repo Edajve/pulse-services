@@ -33,7 +33,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
 
     private String firstName;
 
@@ -62,13 +62,14 @@ public class User implements UserDetails {
     @Column(name = "pin_code")
     private String pinCode;
 
-    // This hash is set on the users client, so that we know what authentication method the user prefers
+    // This hash is set on the users client local cache, so that we reference the user without the userID
     @Column(name = "local_hash")
     private String localHash;
 
     @Column(name = "auth_method")
     private String authMethod;
 
+    @Builder.Default
     @Column(name = "has_been_asked_auth_method")
     private Boolean hasUserBeenAskedAuthMethod = false;
 

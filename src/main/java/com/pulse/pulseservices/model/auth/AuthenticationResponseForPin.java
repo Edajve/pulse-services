@@ -6,6 +6,6 @@ import lombok.Data;
 @Builder
 public class AuthenticationResponseForPin {
     private String token;
-    private Integer id;
+    private Long id;
     private String localHash;
 }

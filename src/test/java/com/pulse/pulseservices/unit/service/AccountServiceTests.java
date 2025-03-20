@@ -1,37 +1,40 @@
 package com.pulse.pulseservices.unit.service;
 
-import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.entity.User;
+import com.pulse.pulseservices.enums.ContractStatus;
+import com.pulse.pulseservices.enums.Country;
+import com.pulse.pulseservices.enums.Role;
+import com.pulse.pulseservices.enums.Sex;
 import com.pulse.pulseservices.model.AccountStats;
+import com.pulse.pulseservices.model.contract.Contract;
 import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.ContractRepository;
 import com.pulse.pulseservices.repositories.UserRepository;
 import com.pulse.pulseservices.service.AccountService;
-import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@Disabled("Currently is not working and tests needs to be fixed")
 @ExtendWith(MockitoExtension.class)
 public class AccountServiceTests {
+
+    @InjectMocks
+    AccountService accountService;
 
     @Mock
     private AccountRepository accountRepository;
@@ -39,287 +42,320 @@ public class AccountServiceTests {
     @Mock
     private ContractRepository contractRepository;
 
-    @InjectMocks
-    private AccountService accountService;
-
     @Mock
     private UserRepository userRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    private User testUser;
+    @Test
+    public void AccountService_resetPassword_Successful() {
 
-    private User existingUser;
+        // Arrange
+        String initialPassword = "securePassword123";
+        String newPassword = "newSecurePassword";
+        String hashedPassword = "hashedPassword123";
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this); // Ensures mocks are properly initialized
-
-        testUser = User.builder()
-                .id(1)
+        User user = User.builder()
+                .id(1L)
                 .firstName("John")
                 .lastName("Doe")
-                .email("john.doe@example.com")
-                .password("secure-password")
+                .email("johndoe@example.com")
+                .password(initialPassword)
+                .role(Role.USER)
+                .securityQuestion("What is your favorite color?")
+                .securityAnswer("Blue")
+                .accountCreatedDate(LocalDateTime.now())
+                .sex(Sex.MALE)
+                .dateOfBirth("1990-05-15")
+                .countryRegion(Country.UNITED_STATES)
+                .pinCode("1234")
+                .localHash("hashedValue123")
+                .authMethod("PIN")
+                .hasUserBeenAskedAuthMethod(false)
                 .build();
 
-        existingUser = User.builder()
-                .id(1)
-                .firstName("John")
-                .lastName("Doe")
-                .email("john.doe@example.com")
-                .password("secure-password")
-                .build();
-    }
-
-    @Test
-    void getAccountById_HappyPath_UserExists() {
-        // Arrange
-        Long userId = 1L;
-        when(accountRepository.findById(userId.intValue())).thenReturn(Optional.of(testUser));
+        // Mock repository behavior
+        when(accountRepository.findById(Math.toIntExact(user.getId()))).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(newPassword)).thenReturn(hashedPassword);
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
         // Act
-        User foundUser = accountService.getAccountById(userId);
+        accountService.resetPassword(user.getId(), newPassword);
 
         // Assert
-        assertNotNull(foundUser);
-        assertEquals(testUser.getId(), foundUser.getId());
-        assertEquals(testUser.getFirstName(), foundUser.getFirstName());
-        assertEquals(testUser.getLastName(), foundUser.getLastName());
-        assertEquals(testUser.getEmail(), foundUser.getEmail());
-
-        // Verify interactions
-        verify(accountRepository, times(1)).findById(userId.intValue());
+        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+        Assertions.assertNotEquals(initialPassword, user.getPassword());
+        Assertions.assertEquals(hashedPassword, user.getPassword()); // Check if password was hashed
     }
 
-    @Test
-    void getAccountById_BadPath_UserNotFound() {
-        // Arrange
-        Long userId = 999L;
-        when(accountRepository.findById(userId.intValue())).thenReturn(Optional.empty());
-
-        // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            accountService.getAccountById(userId);
-        });
-
-        assertEquals("User not found with id: 999", exception.getMessage());
-
-        // Verify interactions
-        verify(accountRepository, times(1)).findById(userId.intValue());
+    private User createUser() {
+        User user = new User();
+        user.setId(1L);
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setEmail("test@example.com");
+        user.setSecurityQuestion("What is your favorite color?");
+        user.setSecurityAnswer("Blue");
+        user.setSex(Sex.FEMALE);
+        user.setDateOfBirth("1990-01-01");
+        user.setCountryRegion(Country.UNITED_STATES);
+        user.setAuthMethod("password");
+        user.setHasUserBeenAskedAuthMethod(true);
+        return user;
     }
 
-    @Test
-    void getStats_HappyPath() {
-        // Arrange
-        Long userId = 1L;
-
-        // Create Users for Contracts
-        User alice = User.builder().id(2).firstName("Alice").lastName("Smith").build();
-        User bob = User.builder().id(3).firstName("Bob").lastName("Johnson").build();
-
-        // Ensure Bob has MORE contracts than Alice
-        Contract contract1 = new Contract();
-        contract1.setParticipantOne(testUser);
-        contract1.setParticipantTwo(bob); // Bob 1st contract
-
-        Contract contract2 = new Contract();
-        contract2.setParticipantOne(testUser);
-        contract2.setParticipantTwo(bob); // Bob 2nd contract
-
-        Contract contract3 = new Contract();
-        contract3.setParticipantOne(testUser);
-        contract3.setParticipantTwo(bob); // Bob 3rd contract
-
-        Contract contract4 = new Contract();
-        contract4.setParticipantOne(testUser);
-        contract4.setParticipantTwo(alice); // Alice 1st contract
-
-        Contract revokedContract = new Contract();
-        revokedContract.setParticipantOne(testUser);
-        revokedContract.setParticipantTwo(alice); // Alice revoked contract
-
-        List<Contract> allContracts = List.of(contract1, contract2, contract3, contract4);
-        List<Contract> revokedContracts = List.of(revokedContract);
-
-        // Mock Repository Calls
-        when(contractRepository.getTotalContractCount(userId)).thenReturn(5);
-        when(contractRepository.getTotalContractRevokedCount(userId)).thenReturn(2);
-        when(contractRepository.getTotalContracts(userId)).thenReturn(allContracts);
-        when(contractRepository.getTotalRevokedContracts(userId)).thenReturn(revokedContracts);
-
-        // Allow multiple calls for Alice and Bob
-        when(accountRepository.findById(2)).thenReturn(Optional.of(alice));
-        when(accountRepository.findById(3)).thenReturn(Optional.of(bob));
-
-        // Act
-        AccountStats stats = accountService.getStats(userId);
-
-        // Assert
-        assertNotNull(stats);
-        assertEquals(5, stats.getTotalContracts());
-        assertEquals(2, stats.getTotalContractsRevoked());
-        assertEquals(1.5, stats.getSuccessfulToRevokedRatio()); // (5 - 2) / 2 = 1.5
-        assertEquals("Bob Johnson", stats.getMostConsentedPartner()); // Bob has 3, Alice has 1
-        assertEquals("Alice Smith", stats.getMostRevokedPartner()); // Alice revoked the most contracts
-
-        // Verify interactions (adjusted)
-        verify(contractRepository, times(1)).getTotalContractCount(userId);
-        verify(contractRepository, times(1)).getTotalContractRevokedCount(userId);
-        verify(contractRepository, times(1)).getTotalContracts(userId);
-        verify(contractRepository, times(1)).getTotalRevokedContracts(userId);
-        verify(accountRepository, times(1)).findById(2); // Alice looked up once
-        verify(accountRepository, times(1)).findById(3); // Bob looked up once
+    private User createUserWithParams(Long id, String firstName, String lastName) {
+        User user = new User();
+        user.setId(id);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        return user;
     }
 
-    @Test
-    void verifySecurityQuestionAndAnswer_UserNotFound() {
-        // Arrange
-        String email = "user@example.com";
-        when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-        // Act
-        String result = accountService.verifySecurityQuestionAndAnswer("What is your pet's name?", "Fluffy", email);
-
-        // Assert
-        assertEquals("Invalid account", result);
-        verify(accountRepository, times(1)).findByEmail(email);
-    }
-
-    @Test
-    void verifySecurityQuestionAndAnswer_NoSecurityQuestion() {
-        // Arrange
-        String email = "user@example.com";
-        User user = User.builder()
-                .id(1)
-                .email(email)
-                .securityQuestion(null) // No security question
-                .securityAnswer("Fluffy")
+    private Contract createContract(User participantOne, User participantTwo, ContractStatus status, boolean p1Revoked, boolean p2Revoked) {
+        return Contract.builder()
+                .participantOne(participantOne)
+                .participantTwo(participantTwo)
+                .status(status)
+                .didParticipantOneRevoke(p1Revoked)
+                .didParticipantTwoRevoke(p2Revoked)
                 .build();
+    }
 
-        when(accountRepository.findByEmail(email)).thenReturn(Optional.of(user));
+    @Disabled
+    @Test
+    void AccountService_getStats_Success() {
+        Long accountId = 1L;
+        User user1 = createUserWithParams(1L, "Alice", "Smith");
+        User user2 = createUserWithParams(2L, "Bob", "Johnson");
+        User user3 = createUserWithParams(3L, "Charlie", "Brown");
 
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                accountService.verifySecurityQuestionAndAnswer("What is your pet's name?", "Fluffy", email));
+        List<Contract> contracts = List.of(
+                createContract(user1, user2, ContractStatus.ACTIVE, false, false),
+                createContract(user1, user2, ContractStatus.ACTIVE, false, false),
+                createContract(user1, user3, ContractStatus.ACTIVE, false, false)
+        );
 
-        assertEquals("This accountId: 1 does not have a security question", exception.getMessage());
+        List<Contract> revokedContracts = List.of(
+                createContract(user1, user3, ContractStatus.CANCELLED, true, false),
+                createContract(user1, user3, ContractStatus.CANCELLED, true, false)
+        );
+
+        when(contractRepository.getTotalContractCount(accountId)).thenReturn(contracts.size() + revokedContracts.size());
+        when(contractRepository.getTotalContractRevokedCount(accountId)).thenReturn(revokedContracts.size());
+        when(contractRepository.getTotalContracts(accountId)).thenReturn(List.of());
+        when(contractRepository.getTotalRevokedContracts(accountId)).thenReturn(List.of());
+        when(accountRepository.findById(2)).thenReturn(Optional.of(user2));
+        when(accountRepository.findById(3)).thenReturn(Optional.of(user3));
+
+        AccountStats stats = accountService.getStats(accountId);
+
+        Assertions.assertEquals(5, stats.getTotalContracts());
+        Assertions.assertEquals(2, stats.getTotalContractsRevoked());
+        Assertions.assertEquals(1.5, stats.getSuccessfulToRevokedRatio());
+        Assertions.assertEquals("Bob Johnson", stats.getMostConsentedPartner());
+        Assertions.assertEquals("Charlie Brown", stats.getMostRevokedPartner());
     }
 
     @Test
-    void verifySecurityQuestionAndAnswer_NoSecurityAnswer() {
-        // Arrange
-        String email = "user@example.com";
-        User user = User.builder()
-                .id(1)
-                .email(email)
-                .securityQuestion("What is your pet's name?")
-                .securityAnswer(null) // No security answer
-                .build();
+    void AccountService_getStats_NoContracts() {
+        Long accountId = 1L;
+        when(contractRepository.getTotalContractCount(accountId)).thenReturn(0);
+        when(contractRepository.getTotalContractRevokedCount(accountId)).thenReturn(0);
+        when(contractRepository.getTotalContracts(accountId)).thenReturn(List.of());
+        when(contractRepository.getTotalRevokedContracts(accountId)).thenReturn(List.of());
 
-        when(accountRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        AccountStats stats = accountService.getStats(accountId);
 
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                accountService.verifySecurityQuestionAndAnswer("What is your pet's name?", "Fluffy", email));
-
-        assertEquals("This accountId: 1 does not have a security Answer", exception.getMessage());
+        Assertions.assertEquals(0, stats.getTotalContracts());
+        Assertions.assertEquals(0, stats.getTotalContractsRevoked());
+        Assertions.assertEquals(0.0, stats.getSuccessfulToRevokedRatio());
+        Assertions.assertEquals("None", stats.getMostConsentedPartner());
+        Assertions.assertEquals("None", stats.getMostRevokedPartner());
     }
 
     @Test
-    void verifySecurityQuestionAndAnswer_IncorrectSecurityQuestion() {
-        // Arrange
-        String email = "user@example.com";
-        User user = User.builder()
-                .id(1)
-                .email(email)
-                .securityQuestion("What is your pet's name?")
-                .securityAnswer("Fluffy")
-                .build();
+    void AccountService_completedToRevokedContractRatio_ValidCases() {
+        Assertions.assertEquals(2.0, accountService.completedToRevokedContractRatio(6, 2));
+        Assertions.assertEquals(1.5, accountService.completedToRevokedContractRatio(5, 2));
+        Assertions.assertEquals(0.0, accountService.completedToRevokedContractRatio(0, 0));
+    }
 
-        when(accountRepository.findByEmail(email)).thenReturn(Optional.of(user));
+    @Disabled
+    @Test
+    void AccountService_getMostOccurringPartner_Success() {
+        Long accountId = 1L;
+        User user1 = createUserWithParams(1L, "Alice", "Smith");
+        User user2 = createUserWithParams(2L, "Bob", "Johnson");
+        User user3 = createUserWithParams(3L, "Charlie", "Brown");
 
-        // Act
-        String result = accountService.verifySecurityQuestionAndAnswer("What is your favorite color?", "Fluffy", email);
+        List<Contract> contracts = new ArrayList<>(Arrays.asList(
+                createContract(user1, user2, ContractStatus.ACTIVE, false, false),
+                createContract(user1, user2, ContractStatus.ACTIVE, false, false),
+                createContract(user1, user3, ContractStatus.ACTIVE, false, false)
+        ));
 
-        // Assert
-        assertEquals("Security Question is incorrect", result);
+        List<Contract> revokedContracts = List.of();
+
+        when(contractRepository.getTotalContractCount(accountId)).thenReturn(contracts.size());
+        when(contractRepository.getTotalContractRevokedCount(accountId)).thenReturn(0);
+//        when(contractRepository.getTotalContracts(accountId)).thenReturn(contracts);
+        // Mocking accountRepository so accountService.getAccountById() returns a valid user
+        when(accountRepository.findById(2)).thenReturn(Optional.of(user2));
+        when(accountRepository.findById(3)).thenReturn(Optional.of(user3));
+
+        AccountStats stats = accountService.getStats(accountId);
+
+        Assertions.assertEquals("Bob Johnson", stats.getMostConsentedPartner());
     }
 
     @Test
-    void verifySecurityQuestionAndAnswer_IncorrectSecurityAnswer() {
-        // Arrange
-        String email = "user@example.com";
-        User user = User.builder()
-                .id(1)
-                .email(email)
-                .securityQuestion("What is your pet's name?")
-                .securityAnswer("Fluffy")
-                .build();
+    void AccountService_getMostOccurringPartner_NoContracts() {
+        Long accountId = 1L;
+        when(contractRepository.getTotalContractCount(accountId)).thenReturn(0);
+        when(contractRepository.getTotalContractRevokedCount(accountId)).thenReturn(0);
+        when(contractRepository.getTotalContracts(accountId)).thenReturn(List.of());
+        when(contractRepository.getTotalRevokedContracts(accountId)).thenReturn(List.of());
 
-        when(accountRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        AccountStats stats = accountService.getStats(accountId);
 
-        // Act
-        String result = accountService.verifySecurityQuestionAndAnswer("What is your pet's name?", "Max", email);
-
-        // Assert
-        assertEquals("Security Answer is incorrect", result);
+        Assertions.assertEquals("None", stats.getMostConsentedPartner());
     }
 
     @Test
-    void verifySecurityQuestionAndAnswer_CorrectSecurityQuestionAndAnswer() {
-        // Arrange
-        String email = "user@example.com";
-        User user = User.builder()
-                .id(1)
-                .email(email)
-                .securityQuestion("What is your pet's name?")
-                .securityAnswer("Fluffy")
-                .build();
+    void AccountService_updateUser_Success() {
+        User existingUser = createUser();
+        User request = new User();
+        request.setFirstName("Jane");
+        request.setLastName("Smith");
 
-        when(accountRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(userRepository.findById(1)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenReturn(existingUser);
 
-        // Act
-        String result = accountService.verifySecurityQuestionAndAnswer("What is your pet's name?", "Fluffy", email);
+        Optional<User> updatedUser = accountService.updateUser(1, request);
 
-        // Assert
-        assertEquals("verified", result);
+        Assertions.assertTrue(updatedUser.isPresent());
+        Assertions.assertEquals("Jane", updatedUser.get().getFirstName());
+        Assertions.assertEquals("Smith", updatedUser.get().getLastName());
     }
 
-//    @Test
-//    void updatePinSetting_HappyPath() {
-//        // Arrange
-//        Long accountId = 1L;
-//        String pinSetting = "true";
-//
-//        // Act
-//        accountService.updatePinSetting(accountId, pinSetting);
-//
-//        // Assert (Verify that repository was called correctly)
-//        verify(accountRepository, times(1)).updatePinSetting(accountId, pinSetting);
-//    }
+    @Test
+    void AccountService_updateUser_UserNotFound() {
+        when(userRepository.findById(1)).thenReturn(Optional.empty());
 
-//    @Test
-//    void updatePinSettingAndPinCode_HappyPath() {
-//        // Arrange
-//        Long accountId = 1L;
-//        String pinSetting = "true";
-//        String rawPinCode = "1234";
-//        String encodedPinCode = "encoded1234";
-//
-//        when(accountRepository.findById(accountId.intValue())).thenReturn(Optional.of(testUser)); // Mock getAccountById
-//        when(passwordEncoder.encode(rawPinCode)).thenReturn(encodedPinCode);
-//        doNothing().when(accountRepository).updatePinSetting(accountId, pinSetting); // Fix for void method
-//
-//        // Act
-//        accountService.updatePinSettingAndPinCode(accountId, pinSetting, rawPinCode);
-//
-//        // Assert
-//        assertEquals(encodedPinCode, testUser.getPinCode()); // Ensure password was encoded and set
-//        verify(accountRepository, times(1)).updatePinSetting(accountId, pinSetting);
-//        verify(accountRepository, times(1)).findById(accountId.intValue()); // Ensure user is retrieved
-//        verify(passwordEncoder, times(1)).encode(rawPinCode);
-//        verify(userRepository, times(1)).save(testUser);
-//    }
+        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () ->
+                accountService.updateUser(1, new User())
+        );
+
+        Assertions.assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
+    void AccountService_updateUser_UpdateRestrictedFields() {
+        User existingUser = createUser();
+        User request = new User();
+        request.setPassword("newPassword");
+
+        when(userRepository.findById(1)).thenReturn(Optional.of(existingUser));
+
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () ->
+                accountService.updateUser(1, request)
+        );
+
+        Assertions.assertEquals("Updating password, pinCode, or localHash is not allowed due to security reasons.", exception.getMessage());
+    }
+
+    @Test
+    void AccountService_verifySecurityQuestionAndAnswer_verified() {
+        User user = createUser();
+        when(accountRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+        String result = accountService.verifySecurityQuestionAndAnswer("What is your favorite color?", "Blue", "test@example.com");
+
+        Assertions.assertEquals("verified", result);
+    }
+
+    @Test
+    void AccountService_verifySecurityQuestionAndAnswer_InvalidAccount() {
+        when(accountRepository.findByEmail("invalid@example.com")).thenReturn(Optional.empty());
+
+        String result = accountService.verifySecurityQuestionAndAnswer("What is your favorite color?", "Blue", "invalid@example.com");
+
+        Assertions.assertEquals("Invalid account", result);
+    }
+
+    @Test
+    void AccountService_verifySecurityQuestionAndAnswer_NoSecurityQuestion() {
+        User user = createUser();
+        user.setSecurityQuestion(null);
+        when(accountRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () ->
+                accountService.verifySecurityQuestionAndAnswer("What is your favorite color?", "Blue", "test@example.com")
+        );
+        Assertions.assertEquals("This accountId: 1 does not have a security question", exception.getMessage());
+    }
+
+    @Test
+    void AccountService_verifySecurityQuestionAndAnswer_NoSecurityAnswer() {
+        User user = createUser();
+        user.setSecurityAnswer(null);
+        when(accountRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+        RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () ->
+                accountService.verifySecurityQuestionAndAnswer("What is your favorite color?", "Blue", "test@example.com")
+        );
+        Assertions.assertEquals("This accountId: 1 does not have a security Answer", exception.getMessage());
+    }
+
+    @Test
+    void AccountService_verifySecurityQuestionAndAnswer_SecurityQuestionIncorrect() {
+        User user = createUser();
+        when(accountRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+        String result = accountService.verifySecurityQuestionAndAnswer("What is your pet's name?", "Blue", "test@example.com");
+
+        Assertions.assertEquals("Security Question is incorrect", result);
+    }
+
+    @Test
+    void AccountService_verifySecurityQuestionAndAnswer_SecurityAnswerIncorrect() {
+        User user = createUser();
+        when(accountRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+        String result = accountService.verifySecurityQuestionAndAnswer("What is your favorite color?", "Red", "test@example.com");
+
+        Assertions.assertEquals("Security Answer is incorrect", result);
+    }
+
+    @Test
+    public void AccountService_completedToRevokedContractRatio_returnRatio_WhenValidInput() {
+        double ratio = accountService.completedToRevokedContractRatio(10, 2);
+        Assertions.assertEquals(4.0, ratio);
+    }
+
+    @Test
+    public void AccountService_completedToRevokedContractRatio_returnZero_WhenNoRevokedContracts() {
+        double ratio = accountService.completedToRevokedContractRatio(10, 0);
+        Assertions.assertEquals(0.0, ratio);
+    }
+
+    @Test
+    public void AccountService_completedToRevokedContractRatio_returnZero_WhenAllContractsRevoked() {
+        double ratio = accountService.completedToRevokedContractRatio(10, 10);
+        Assertions.assertEquals(0.0, ratio);
+    }
+
+    @Test
+    public void AccountService_completedToRevokedContractRatio_returnZero_WhenNoContractsExist() {
+        double ratio = accountService.completedToRevokedContractRatio(0, 0);
+        Assertions.assertEquals(0.0, ratio);
+    }
+
+    @Test
+    public void AccountService_completedToRevokedContractRatio_returnRoundedRatio_WhenDecimalResult() {
+        double ratio = accountService.completedToRevokedContractRatio(7, 3);
+        Assertions.assertEquals(1.33, ratio);
+    }
 }

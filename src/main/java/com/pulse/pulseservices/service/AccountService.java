@@ -42,17 +42,7 @@ public class AccountService {
         this.userRepository = userRepository;
     }
 
-    public User getAccountById(Long id) {
-        return accountRepository.findById(Math.toIntExact(id))
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-    }
-
-    public String getStoredPassword(Long userId) {
-        return accountRepository.findById(Math.toIntExact(userId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"))
-                .getPassword();
-    }
-
+    // TODO have to unit test this method
     public AccountStats getStats(Long id) {
         int totalContractsCount = contractRepository.getTotalContractCount(id);
         int totalContractsRevoked = contractRepository.getTotalContractRevokedCount(id);
@@ -71,13 +61,14 @@ public class AccountService {
                 .build();
     }
 
+    // TODO have to unit test this method
     private String getMostOccurringPartner(List<Contract> contracts, Long id) {
         if (contracts.isEmpty()) return "None";
 
-        Map<Integer, Integer> occurrences = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
+        Map<Long, Integer> occurrences = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
 
         for (Contract contract : contracts) {
-            int partnerId;
+            Long partnerId;
             if ((long) contract.getParticipantOne().getId() == id) {
                 partnerId = contract.getParticipantTwo().getId();
             } else {
@@ -87,10 +78,10 @@ public class AccountService {
             occurrences.put(partnerId, occurrences.getOrDefault(partnerId, 0) + 1);
         }
 
-        Integer mostContractedPartnerId = null;
+        Long mostContractedPartnerId = null;
         Integer maxOccurrences = 0;
 
-        for (Map.Entry<Integer, Integer> entry : occurrences.entrySet()) {
+        for (Map.Entry<Long, Integer> entry : occurrences.entrySet()) {
             if (entry.getValue() > maxOccurrences ||
                 (entry.getValue().equals(maxOccurrences) && (mostContractedPartnerId == null || entry.getKey() < mostContractedPartnerId))) {
                 // Tie-breaker: Pick the partner with the smaller ID
@@ -106,17 +97,17 @@ public class AccountService {
         return String.format("%s %s", mostContractedPartner.getFirstName(), mostContractedPartner.getLastName());
     }
 
-    private double completedToRevokedContractRatio(int totalContracts, int totalContractsRevoked) {
+    public double completedToRevokedContractRatio(int totalContracts, int totalContractsRevoked) {
         if (totalContractsRevoked == 0) return 0;
         double completedContracts = totalContracts - totalContractsRevoked;
         double ratio = completedContracts / totalContractsRevoked;
         return Math.round(ratio * 100.0) / 100.0;
     }
 
-    public void resetPassword(int accountId, String newPassword) {
+    public void resetPassword(Long accountId, String newPassword) {
         try {
             logger.info("Password reset request received for User ID = {}", accountId);
-            User account = getAccountById((long) accountId);
+            User account = getAccountById(accountId);
             account.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(account);
             logger.info("Password successfully changed for User ID = {}", accountId);
@@ -162,18 +153,6 @@ public class AccountService {
         return "verified";
     }
 
-//    public void updatePinSetting(Long accountId, String pinSetting) {
-//        accountRepository.updatePinSetting(accountId, pinSetting);
-//    }
-//
-//    public void updatePinSettingAndPinCode(Long accountId, String pinSetting, String pinCode) {
-//        accountRepository.updatePinSetting(accountId, pinSetting);
-//
-//        User account = getAccountById(accountId);
-//        account.setPinCode(passwordEncoder.encode(pinCode));
-//        userRepository.save(account);
-//    }
-
     public String getAuthMethodByLocalHash(String localHash) {
         return userRepository.findByLocalHash(localHash)
                 .map(User::getAuthMethod)
@@ -186,7 +165,7 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         boolean isUserTryingUpdatePIFields =   request.getPassword() != null ||
-                                                  request.getLocalHash() != null;
+                                               request.getLocalHash() != null;
         if (isUserTryingUpdatePIFields) {
             throw new IllegalArgumentException("Updating password, pinCode, or localHash is not allowed due to security reasons.");
         }
@@ -207,7 +186,29 @@ public class AccountService {
         return Optional.of(userRepository.save(user));
     }
 
+//    public void updatePinSetting(Long accountId, String pinSetting) {
+//        accountRepository.updatePinSetting(accountId, pinSetting);
+//    }
+//
+//    public void updatePinSettingAndPinCode(Long accountId, String pinSetting, String pinCode) {
+//        accountRepository.updatePinSetting(accountId, pinSetting);
+//
+//        User account = getAccountById(accountId);
+//        account.setPinCode(passwordEncoder.encode(pinCode));
+//        userRepository.save(account);
+//    }
+
     public List<Integer> getAccountsWithName(String name) {
         return accountRepository.getAllAccountsWithName(name);
     }
+
+    public User getAccountById(Long id) {
+        return accountRepository.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+    }
+
+    public String getStoredPassword(Long userId) {
+        return getAccountById(userId).getPassword();
+    }
+
 }
