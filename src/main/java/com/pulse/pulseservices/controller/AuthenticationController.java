@@ -70,7 +70,12 @@ public class AuthenticationController {
             }
 
             if (ResetPasswordStatus.VERIFIED.getMessage().equals(verificationStatus)) {
-                return ResponseEntity.status(HttpStatus.OK).body(verificationStatus);
+                Optional<User> account = accountService.getUserByEmail(resetPasswordRequest.getEmail());
+                if (account.isPresent()) {
+                    accountService.resetPassword(account.get().getId(), resetPasswordRequest.getNewPassword());
+                    return ResponseEntity.ok("Successfully reset password");
+                }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
             }
 
             Optional<User> account = accountService.getUserByEmail(resetPasswordRequest.getEmail());

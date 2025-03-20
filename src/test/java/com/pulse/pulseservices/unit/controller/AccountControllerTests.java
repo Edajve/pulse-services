@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static com.pulse.pulseservices.utils.Constants.V1_BASE_URL;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -41,6 +42,7 @@ class AccountControllerTests {
     private User mockUser;
     private AccountStats mockStats;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final static String BASE_URL = V1_BASE_URL + "/account";
 
     @BeforeEach
     void setUp() {
@@ -58,7 +60,7 @@ class AccountControllerTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-01-01")
-                .countryRegion(Country.UNITED_STATES)
+                .countryRegion(Country.US)
                 .pinCode("1234")
                 .build();
 
@@ -72,13 +74,13 @@ class AccountControllerTests {
     }
 
     @Test
-    void shouldReturnUserWhenGetAccountByIdIsCalled() throws Exception {
+    void accountController_shouldReturnUserWhenGetAccountByIdIsCalled() throws Exception {
         // Given
         Long accountId = 1L;
         when(accountService.getAccountById(accountId)).thenReturn(mockUser);
 
         // When & Then
-        mockMvc.perform(get("/api/v1/account/{accountId}", accountId)
+        mockMvc.perform(get(BASE_URL  + "/{accountId}", accountId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(mockUser.getId()))
@@ -91,14 +93,14 @@ class AccountControllerTests {
     }
 
     @Test
-    void shouldReturnAccountStatsWhenGetAccountStatsByIdIsCalled() throws Exception {
+    void accountController_shouldReturnAccountStatsWhenGetAccountStatsByIdIsCalled() throws Exception {
         // Given
         Long accountId = 1L;
         when(accountService.getAccountById(accountId)).thenReturn(mockUser);
         when(accountService.getStats(accountId)).thenReturn(mockStats);
 
         // When & Then
-        mockMvc.perform(get("/api/v1/account/stats/{accountId}", accountId)
+        mockMvc.perform(get(BASE_URL + "/stats/{accountId}", accountId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalContracts").value(50))
@@ -112,7 +114,7 @@ class AccountControllerTests {
     }
 
     @Test
-    void testUpdateUserById_Success() throws Exception {
+    void accountController_testUpdateUserById_Success() throws Exception {
         User user = new User();
         user.setId(1L);
         user.setFirstName("John");
@@ -121,7 +123,7 @@ class AccountControllerTests {
 
         when(accountService.updateUser(eq(1), any(User.class))).thenReturn(Optional.of(user));
 
-        mockMvc.perform(put("/api/v1/account/update/1")
+        mockMvc.perform(put(BASE_URL + "/update/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
@@ -130,7 +132,7 @@ class AccountControllerTests {
     }
 
     @Test
-    void testUpdateUserById_UserNotFound() throws Exception {
+    void accountController_testUpdateUserById_UserNotFound() throws Exception {
         User user = new User();
         user.setId(1L);
         user.setFirstName("John");
@@ -138,7 +140,7 @@ class AccountControllerTests {
 
         when(accountService.updateUser(eq(1), any(User.class))).thenReturn(Optional.empty());
 
-        mockMvc.perform(put("/api/v1/account/update/1")
+        mockMvc.perform(put(BASE_URL + "/update/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isNotFound());

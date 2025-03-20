@@ -68,7 +68,7 @@ public class AccountServiceTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-15")
-                .countryRegion(Country.UNITED_STATES)
+                .countryRegion(Country.US)
                 .pinCode("1234")
                 .localHash("hashedValue123")
                 .authMethod("PIN")
@@ -99,7 +99,7 @@ public class AccountServiceTests {
         user.setSecurityAnswer("Blue");
         user.setSex(Sex.FEMALE);
         user.setDateOfBirth("1990-01-01");
-        user.setCountryRegion(Country.UNITED_STATES);
+        user.setCountryRegion(Country.US);
         user.setAuthMethod("password");
         user.setHasUserBeenAskedAuthMethod(true);
         return user;
