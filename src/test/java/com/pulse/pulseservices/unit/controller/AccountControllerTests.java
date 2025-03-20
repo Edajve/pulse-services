@@ -56,9 +56,9 @@ class AccountControllerTests {
                 .securityQuestion("What is your pet's name?")
                 .securityAnswer("Fluffy")
                 .accountCreatedDate(LocalDateTime.now())
-                .sex(Sex.male)
+                .sex(Sex.MALE)
                 .dateOfBirth("1990-01-01")
-                .countryRegion(Country.united_states)
+                .countryRegion(Country.UNITED_STATES)
                 .pinCode("1234")
                 .build();
 
