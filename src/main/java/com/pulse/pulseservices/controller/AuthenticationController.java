@@ -82,19 +82,21 @@ public class AuthenticationController {
         }
     }
 
-    @PutMapping("/update/pin/{accountId}")
-    public ResponseEntity<?> updatePin(
-            @PathVariable Long accountId,
-            @RequestParam boolean pinSetting,
-            @RequestParam(required = false) String pinCode) {
-        accountService.updatePinSetting(accountId, pinSetting);
-
-        if (pinCode != null) {
-            accountService.updatePinSettingAndPinCode(accountId, pinSetting, pinCode);
-        }
-
-        return ResponseEntity.ok().build();
-    }
+   // TODO updatePinSettings takes a boolean for pinSetings, its supposed to take String,
+   // TODO also the repository method expects a boolean in the pin_code instead of a string
+//    @PutMapping("/update/pin/{accountId}")
+//    public ResponseEntity<?> updatePin(
+//            @PathVariable Long accountId,
+//            @RequestParam String pinSetting,
+//            @RequestParam(required = false) String pinCode) {
+//        accountService.updatePinSetting(accountId, pinSetting);
+//
+//        if (pinCode != null) {
+//            accountService.updatePinSettingAndPinCode(accountId, pinSetting, pinCode);
+//        }
+//
+//        return ResponseEntity.ok().build();
+//    }
 
     @GetMapping("/authMethod")
     public ResponseEntity<String> getAuthMethodByLocalHash(@RequestParam String localHash) {
