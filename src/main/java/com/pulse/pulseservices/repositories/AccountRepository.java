@@ -24,26 +24,25 @@ public interface AccountRepository extends JpaRepository<User, Integer> {
             """, nativeQuery = true)
     void updatePinSetting(Long accountId, boolean pinSetting);
 
-
     @Query(value = """
-        SELECT * 
+        SELECT *
         FROM account
-        WHERE pin_code = ?1 
+        WHERE pin_code = ?1
         AND local_hash = ?2
         LIMIT 1
         """, nativeQuery = true)
     Optional<User> getUserByPinAndHash(String pin, String localHash);
 
     @Query(value = """
-        SELECT * 
+        SELECT *
         FROM account
-        WHERE local_hash = ?1 
+        WHERE local_hash = ?1
         LIMIT 1
         """, nativeQuery = true)
     Optional<User> getUserByHash(String localHash);
 
     @Query(value = """
-        SELECT id 
+        SELECT id
         FROM account
         WHERE LOWER(first_name) = LOWER(?1)
         """, nativeQuery = true)
