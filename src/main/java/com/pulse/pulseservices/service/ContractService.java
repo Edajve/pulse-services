@@ -62,7 +62,10 @@ public class ContractService {
 
             if (scannieActiveContract.isEmpty()) {
                 String storedPassword = accountService.getStoredPassword(scannerId);
-                if (!passwordEncoder.matches(scannerPassword, storedPassword)) {
+                logger.info("Stored Password Retrieved: {}", storedPassword);
+                boolean passwordValid = passwordEncoder.matches(scannerPassword, storedPassword);
+                logger.info("Password Match Result: {}", passwordValid);
+                if (!passwordValid) {
                     logger.error("Invalid password attempt for Scanner ID = {}", scannerId);
                     throw new BadCredentialsException("Invalid password");
                 }
@@ -81,7 +84,10 @@ public class ContractService {
                 Contract contract = scannieActiveContract.get();
 
                 String storedPassword = accountService.getStoredPassword(scannerId);
-                if (!passwordEncoder.matches(scannerPassword, storedPassword)) {
+                logger.info("Stored Password Retrieved: {}", storedPassword);
+                boolean passwordValid = passwordEncoder.matches(scannerPassword, storedPassword);
+                logger.info("Password Match Result: {}", passwordValid);
+                if (!passwordValid) {
                     logger.error("Invalid password attempt for Scanner ID = {} when trying to update contract", scannerId);
                     throw new BadCredentialsException("Invalid password");
                 }
