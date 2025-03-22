@@ -25,6 +25,7 @@ Run the following command to **build and start the services**:
 
 ### Run this if you make any code changes and want docker to include the changes 
 This command will rebuild the docker images with the included code changes and start the containers like normal
+First build JAR ```./gradlew clean build -x test``` then run docker-compose file
 ```docker-compose up --build -d```
 
 ### 🛑 Stop Application (Keep Data)

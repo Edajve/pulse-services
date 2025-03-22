@@ -79,7 +79,7 @@ public class AuthenticationServiceTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.GENDER_QUEER)
                 .dateOfBirth("10-21-2000")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .build();
 
         mockUser = User.builder()
@@ -93,7 +93,7 @@ public class AuthenticationServiceTests {
                 .securityQuestion(registerRequest.getSecurityQuestion())
                 .accountCreatedDate(registerRequest.getAccountCreatedDate())
                 .sex(registerRequest.getSex())
-                .dateOfBirth(registerRequest.getDateOfBirth().toString())
+                .dateOfBirth(registerRequest.getDateOfBirth())
                 .countryRegion(registerRequest.getCountryRegion())
                 .localHash(Util.generateHash())
                 .authMethod(AuthMethod.BASIC.toString())
@@ -139,5 +139,4 @@ public class AuthenticationServiceTests {
         // Verify that save is never called
         verify(userRepository, never()).save(any(User.class));
     }
-
 }

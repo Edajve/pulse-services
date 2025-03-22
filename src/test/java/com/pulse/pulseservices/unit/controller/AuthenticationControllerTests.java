@@ -8,6 +8,7 @@ import com.pulse.pulseservices.enums.Country;
 import com.pulse.pulseservices.enums.ResetPasswordStatus;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.enums.Sex;
+import com.pulse.pulseservices.model.ResetPinRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponse;
 import com.pulse.pulseservices.model.auth.AuthenticateWithPinRequest;
@@ -82,7 +83,7 @@ public class AuthenticationControllerTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-01-01")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .imageBytes(new byte[]{1, 2, 3})
                 .build();
 
@@ -326,5 +327,43 @@ public class AuthenticationControllerTests {
                         .with(csrf()))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string(""));
+    }
+
+    @Test
+    void AuthenticationController_updatePin_Success() throws Exception {
+        // Arrange
+        ResetPinRequest resetPinRequest = ResetPinRequest.builder()
+                .id(1)
+                .pin("1234")
+                .build();
+
+        when(accountService.resetPin(any(ResetPinRequest.class))).thenReturn("1234");
+
+        // Act & Assert
+        mockMvc.perform(put(BASE_URL + "/reset/pin")
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(resetPinRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("PIN updated successfully."));
+    }
+
+    @Test
+    void AuthenticationController_updatePin_Failure() throws Exception {
+        // Arrange
+        ResetPinRequest resetPinRequest = ResetPinRequest.builder()
+                .id(1)
+                .pin("1234")
+                .build();
+
+        when(accountService.resetPin(any(ResetPinRequest.class))).thenReturn(null);
+
+        // Act & Assert
+        mockMvc.perform(put(BASE_URL + "/reset/pin")
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(resetPinRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Account not found. PIN update failed."));
     }
 }

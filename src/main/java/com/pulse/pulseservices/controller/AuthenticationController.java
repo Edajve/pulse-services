@@ -2,6 +2,7 @@ package com.pulse.pulseservices.controller;
 
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.enums.ResetPasswordStatus;
+import com.pulse.pulseservices.model.ResetPinRequest;
 import com.pulse.pulseservices.model.auth.AuthenticateWithPinRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationRequest;
 import com.pulse.pulseservices.model.auth.AuthenticationResponseForPin;
@@ -87,21 +88,16 @@ public class AuthenticationController {
         }
     }
 
-   // TODO updatePinSettings takes a boolean for pinSetings, its supposed to take String,
-   // TODO also the repository method expects a boolean in the pin_code instead of a string
-//    @PutMapping("/update/pin/{accountId}")
-//    public ResponseEntity<?> updatePin(
-//            @PathVariable Long accountId,
-//            @RequestParam String pinSetting,
-//            @RequestParam(required = false) String pinCode) {
-//        accountService.updatePinSetting(accountId, pinSetting);
-//
-//        if (pinCode != null) {
-//            accountService.updatePinSettingAndPinCode(accountId, pinSetting, pinCode);
-//        }
-//
-//        return ResponseEntity.ok().build();
-//    }
+    @PutMapping("/reset/pin")
+    public ResponseEntity<?> updatePin(@RequestBody ResetPinRequest request) {
+        String updatedPin = accountService.resetPin(request);
+        if (updatedPin != null) {
+            return ResponseEntity.ok("PIN updated successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Account not found. PIN update failed.");
+        }
+    }
 
     @GetMapping("/authMethod")
     public ResponseEntity<String> getAuthMethodByLocalHash(@RequestParam String localHash) {

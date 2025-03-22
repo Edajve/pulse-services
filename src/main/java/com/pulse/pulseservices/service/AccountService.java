@@ -4,6 +4,7 @@ import com.pulse.pulseservices.entity.Contract;
 import com.pulse.pulseservices.entity.User;
 import com.pulse.pulseservices.exception.UserNotFoundException;
 import com.pulse.pulseservices.model.AccountStats;
+import com.pulse.pulseservices.model.ResetPinRequest;
 import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.ContractRepository;
 import com.pulse.pulseservices.repositories.UserRepository;
@@ -93,7 +94,7 @@ public class AccountService {
         if (mostContractedPartnerId == null) return "None";
 
 
-        User mostContractedPartner = getAccountById(Long.valueOf(mostContractedPartnerId));
+        User mostContractedPartner = getAccountById(mostContractedPartnerId);
         return String.format("%s %s", mostContractedPartner.getFirstName(), mostContractedPartner.getLastName());
     }
 
@@ -186,18 +187,6 @@ public class AccountService {
         return Optional.of(userRepository.save(user));
     }
 
-//    public void updatePinSetting(Long accountId, String pinSetting) {
-//        accountRepository.updatePinSetting(accountId, pinSetting);
-//    }
-//
-//    public void updatePinSettingAndPinCode(Long accountId, String pinSetting, String pinCode) {
-//        accountRepository.updatePinSetting(accountId, pinSetting);
-//
-//        User account = getAccountById(accountId);
-//        account.setPinCode(passwordEncoder.encode(pinCode));
-//        userRepository.save(account);
-//    }
-
     public List<Integer> getAccountsWithName(String name) {
         return accountRepository.getAllAccountsWithName(name);
     }
@@ -211,4 +200,12 @@ public class AccountService {
         return getAccountById(userId).getPassword();
     }
 
+    @Transactional
+    public String resetPin(ResetPinRequest request) {
+        int rowsUpdated = accountRepository.updatePinSetting(request.getId(), request.getPin());
+        if (rowsUpdated > 0) {
+            return request.getPin(); // Success
+        }
+        return null; // No rows updated
+    }
 }

@@ -2,6 +2,7 @@ package com.pulse.pulseservices.repositories;
 
 import com.pulse.pulseservices.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -15,13 +16,13 @@ public interface AccountRepository extends JpaRepository<User, Integer> {
             """, nativeQuery = true)
     Optional<User> findByEmail(String email);
 
-//    @Modifying
-//    @Query(value = """
-//            UPDATE account
-//            SET pin_code = ?2
-//            WHERE id = ?1
-//            """, nativeQuery = true)
-//    void updatePinSetting(Long accountId, String pinSetting);
+    @Modifying
+    @Query(value = """
+        UPDATE account
+        SET pin_code = ?2
+        WHERE id = ?1
+        """, nativeQuery = true)
+    int updatePinSetting(int accountId, String pinSetting);
 
     @Query(value = """
         SELECT *

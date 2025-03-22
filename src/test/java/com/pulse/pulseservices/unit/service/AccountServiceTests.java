@@ -68,7 +68,7 @@ public class AccountServiceTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-15")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode("1234")
                 .localHash("hashedValue123")
                 .authMethod("PIN")
@@ -99,7 +99,7 @@ public class AccountServiceTests {
         user.setSecurityAnswer("Blue");
         user.setSex(Sex.FEMALE);
         user.setDateOfBirth("1990-01-01");
-        user.setCountryRegion(Country.US);
+        user.setCountryRegion(Country.united_states);
         user.setAuthMethod("password");
         user.setHasUserBeenAskedAuthMethod(true);
         return user;
@@ -195,8 +195,6 @@ public class AccountServiceTests {
                 createContract(user1, user2, ContractStatus.ACTIVE, false, false),
                 createContract(user1, user3, ContractStatus.ACTIVE, false, false)
         ));
-
-        List<Contract> revokedContracts = List.of();
 
         when(contractRepository.getTotalContractCount(accountId)).thenReturn(contracts.size());
         when(contractRepository.getTotalContractRevokedCount(accountId)).thenReturn(0);

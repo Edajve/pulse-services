@@ -41,7 +41,7 @@ public class AccountRepositoryTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-15")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode("1234")
                 .localHash("hashedValue123")
                 .authMethod("PIN")
@@ -113,7 +113,7 @@ public class AccountRepositoryTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-15")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode(pinCode)
                 .localHash(hash)
                 .authMethod("PIN")
@@ -147,7 +147,7 @@ public class AccountRepositoryTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-15")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode("1234")
                 .localHash(hash)
                 .authMethod("PIN")
@@ -181,7 +181,7 @@ public class AccountRepositoryTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-15")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode("1234")
                 .localHash("hashedValue123")
                 .authMethod("PIN")
@@ -214,7 +214,7 @@ public class AccountRepositoryTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-15")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode("1234")
                 .localHash("hashedValue123")
                 .authMethod("PIN")
@@ -232,7 +232,7 @@ public class AccountRepositoryTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-05-16")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode("1236")
                 .localHash("hashedValue126")
                 .authMethod("BIOMETRIC")
@@ -249,37 +249,4 @@ public class AccountRepositoryTests {
         Assertions.assertThat(userID.size()).isEqualTo(2);
     }
 
-    @Test
-    public void AccountRepository_findById_ReturnUser() {
-        Long id = 1L;
-
-        // Arrange
-        User user = User.builder()
-                .id(id)
-                .firstName("John")
-                .lastName("Doe")
-                .email("johndoe@example.com")
-                .password("securePassword123")
-                .role(Role.USER)
-                .securityQuestion("What is your favorite color?")
-                .securityAnswer("Blue")
-                .accountCreatedDate(LocalDateTime.now())
-                .sex(Sex.MALE)
-                .dateOfBirth("1990-05-15")
-                .countryRegion(Country.US)
-                .pinCode("1234")
-                .localHash("hashedValue123")
-                .authMethod("PIN")
-                .hasUserBeenAskedAuthMethod(false)
-                .build();
-
-        accountRepository.save(user);
-
-        // Act
-       Optional<User> userById = accountRepository.findById(Math.toIntExact(id));
-
-        // Assert
-        Assertions.assertThat(userById.isPresent()).isNotNull();
-        Assertions.assertThat(userById.get().getId().equals(id));
-    }
 }

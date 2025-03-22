@@ -60,7 +60,7 @@ class AccountControllerTests {
                 .accountCreatedDate(LocalDateTime.now())
                 .sex(Sex.MALE)
                 .dateOfBirth("1990-01-01")
-                .countryRegion(Country.US)
+                .countryRegion(Country.united_states)
                 .pinCode("1234")
                 .build();
 
