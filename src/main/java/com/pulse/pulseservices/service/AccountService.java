@@ -63,7 +63,7 @@ public class AccountService {
     }
 
     // TODO have to unit test this method
-    private String getMostOccurringPartner(List<Contract> contracts, Long id) {
+    public String getMostOccurringPartner(List<Contract> contracts, Long id) {
         if (contracts.isEmpty()) return "None";
 
         Map<Long, Integer> occurrences = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
