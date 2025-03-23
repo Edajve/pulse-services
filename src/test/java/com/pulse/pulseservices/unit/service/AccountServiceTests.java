@@ -6,6 +6,7 @@ import com.pulse.pulseservices.enums.Country;
 import com.pulse.pulseservices.enums.Role;
 import com.pulse.pulseservices.enums.Sex;
 import com.pulse.pulseservices.model.AccountStats;
+import com.pulse.pulseservices.model.ResetPinRequest;
 import com.pulse.pulseservices.model.contract.Contract;
 import com.pulse.pulseservices.repositories.AccountRepository;
 import com.pulse.pulseservices.repositories.ContractRepository;
@@ -304,6 +305,7 @@ public class AccountServiceTests {
         RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () ->
                 accountService.verifySecurityQuestionAndAnswer("What is your favorite color?", "Blue", "test@example.com")
         );
+
         Assertions.assertEquals("This accountId: 1 does not have a security Answer", exception.getMessage());
     }
 
@@ -355,5 +357,38 @@ public class AccountServiceTests {
     public void AccountService_completedToRevokedContractRatio_returnRoundedRatio_WhenDecimalResult() {
         double ratio = accountService.completedToRevokedContractRatio(7, 3);
         Assertions.assertEquals(1.33, ratio);
+    }
+
+    @Test
+    public void AccountService_resetPin_Success() {
+        // Arrange
+        ResetPinRequest pinRequest = ResetPinRequest.builder()
+                .id(1)
+                .pin("1111")
+                .build();
+
+        // Act
+        when(accountRepository.updatePinCode(pinRequest.getId(), pinRequest.getPin())).thenReturn(1);
+        String result = accountService.resetPin(pinRequest);
+
+        // Assert
+        Assertions.assertEquals(result, pinRequest.getPin());
+
+    }
+
+    @Test
+    public void AccountService_resetPin_Fail() {
+        // Arrange
+        ResetPinRequest pinRequest = ResetPinRequest.builder()
+                .id(1)
+                .pin("1111")
+                .build();
+
+        // Act
+        when(accountRepository.updatePinCode(pinRequest.getId(), pinRequest.getPin())).thenReturn(0);
+        String result = accountService.resetPin(pinRequest);
+
+        // Assert
+        Assertions.assertNull(result);
     }
 }
