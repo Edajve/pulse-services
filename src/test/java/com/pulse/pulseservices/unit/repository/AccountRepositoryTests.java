@@ -54,46 +54,9 @@ public class AccountRepositoryTests {
         Optional<User> foundByEmail = accountRepository.findByEmail(user.getEmail());
 
         // Assert
-        Assertions.assertThat(foundByEmail).isPresent(); // ✅ Correct way to check Optional presence
+        Assertions.assertThat(foundByEmail).isPresent();
         Assertions.assertThat(foundByEmail.get().getId()).isGreaterThan(0);
     }
-
-//    @Test
-//    @Transactional // Ensures commit so that update takes effect
-//    public void AccountRepository_UpdatePinSetting_Success() {
-//
-//        // Arrange
-//        User user = User.builder()
-//                .firstName("Jane")
-//                .lastName("Doe")
-//                .email("janedoe@example.com")
-//                .password("securePassword123")
-//                .role(Role.USER)
-//                .securityQuestion("What is your pet's name?")
-//                .securityAnswer("Buddy")
-//                .accountCreatedDate(LocalDateTime.now())
-//                .sex(Sex.FEMALE)
-//                .dateOfBirth("1995-07-20")
-//                .countryRegion(Country.UNITED_STATES)
-//                .pinCode("1234") // Initial PIN
-//                .localHash("hashExample")
-//                .authMethod("PIN")
-//                .hasUserBeenAskedAuthMethod(true)
-//                .build();
-//
-//        accountRepository.save(user);
-//
-//        Integer userId = accountRepository.findByEmail(user.getEmail()).get().getId();
-//
-//        // Act: Update the PIN
-//        accountRepository.updatePinSetting(Long.valueOf(userId), "1111");
-//
-//        // Refresh Entity from DB
-//        User updatedUser = accountRepository.findById(Math.toIntExact(userId)).orElseThrow();
-//
-//        // Assert: Check if PIN was updated
-//        Assertions.assertThat(updatedUser.getPinCode()).isEqualTo("1111");
-//    }
 
     @Test
     public void AccountRepository_getUserByPinAndHash_ReturnUser() {
@@ -248,5 +211,4 @@ public class AccountRepositoryTests {
         // Assert
         Assertions.assertThat(userID.size()).isEqualTo(2);
     }
-
 }
