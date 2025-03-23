@@ -202,7 +202,7 @@ public class AccountService {
 
     @Transactional
     public String resetPin(ResetPinRequest request) {
-        int rowsUpdated = accountRepository.updatePinSetting(request.getId(), request.getPin());
+        int rowsUpdated = accountRepository.updatePinCode(request.getId(), request.getPin());
         if (rowsUpdated > 0) {
             return request.getPin(); // Success
         }

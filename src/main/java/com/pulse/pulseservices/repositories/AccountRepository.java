@@ -22,7 +22,7 @@ public interface AccountRepository extends JpaRepository<User, Integer> {
         SET pin_code = ?2
         WHERE id = ?1
         """, nativeQuery = true)
-    int updatePinSetting(int accountId, String pinSetting);
+    int updatePinCode(int accountId, String pinSetting);
 
     @Query(value = """
         SELECT *
